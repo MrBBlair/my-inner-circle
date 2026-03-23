@@ -1,3 +1,4 @@
+import imgWashDay from "../assets/welcome/wash-day-hair.png";
 import imgSisterLocs from "../assets/welcome/welcome-sister-locs.png";
 import imgStraightHair from "../assets/welcome/welcome-straight-hair.png";
 import imgBraids from "../assets/welcome/welcome-braids.png";
@@ -15,6 +16,11 @@ export type CrownBlogPost = {
   alt: string;
   paragraphs: string[];
   tips?: string[];
+  /**
+   * When artwork has a lot of negative space above the subject, bias `object-fit: cover`
+   * toward the lower frame so the tile feels full (e.g. hero collage crops).
+   */
+  photoFocus?: "lower";
 };
 
 export type CrownGuide = {
@@ -111,8 +117,8 @@ export const CROWN_BLOG_POSTS: CrownBlogPost[] = [
     excerpt:
       "Breaking the cycle of “I’ll do it Sunday” dread — prep, timing, and tiny rewards that make cleansing feel like care.",
     readMins: 4,
-    src: imgSisterLocs,
-    alt: "Illustration of an African American woman with sisterlocks",
+    src: imgWashDay,
+    alt: "Illustration of an African American woman peacefully washing her natural hair with lather and warm light",
     paragraphs: [
       "Wash day carries a reputation — hours on your feet, products everywhere, and the emotional weight of wanting your hair to cooperate. Renaming it as a ritual does not erase the labor, but it can change the soundtrack: warm water, a podcast that feels like company, or ten minutes of nothing but scalp massage because nobody is rushing you.",
       "Prep wins most battles. Detangle in sections before the shower if that is your hair’s love language. Line up towels, clips, and conditioner so you are not dripping on cold tile hunting for tools. If you have kids or caregivers in the house, trade time blocks honestly — your crown time counts as real infrastructure.",

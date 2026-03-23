@@ -24,7 +24,12 @@ export function CrownBlogArticlePage() {
         <span aria-hidden> · </span>
         <span>{post.readMins} min read</span>
       </p>
-      <figure className="crown-article__hero">
+      <figure
+        className={
+          "crown-article__hero" +
+          (post.photoFocus === "lower" ? " crown-article__hero--focus-lower" : "")
+        }
+      >
         <img src={post.src} alt={post.alt} width={800} height={600} />
       </figure>
       <div className="crown-article__body">

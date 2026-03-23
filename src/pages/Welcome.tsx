@@ -170,7 +170,12 @@ export function Welcome() {
               <li key={post.id}>
                 <Link to={`/crown/blog/${post.slug}`} className="welcome__crown-post-link">
                   <article className="welcome__crown-post">
-                    <div className="welcome__crown-post-photo">
+                    <div
+                      className={
+                        "welcome__crown-post-photo" +
+                        (post.photoFocus === "lower" ? " welcome__crown-post-photo--focus-lower" : "")
+                      }
+                    >
                       <img src={post.src} alt={post.alt} loading="lazy" decoding="async" />
                     </div>
                     <div className="welcome__crown-post-body">
@@ -219,46 +224,57 @@ export function Welcome() {
         </div>
       </section>
 
-      <section className="welcome__grid" aria-labelledby="features-heading">
-        <h2 id="features-heading" className="sr-only">
-          What you will find inside
-        </h2>
-        <article className="welcome__card welcome__card--home">
-          <div className="welcome__card-photo-wrap">
-            <img src={FEATURE_PHOTOS[0].src} alt={FEATURE_PHOTOS[0].alt} loading="lazy" decoding="async" />
-          </div>
-          <div className="welcome__card-body">
-            <h3>Community forum</h3>
-            <p>
-              Topic rooms for health, career, healing, parenting, and more — pull up a chair, share
-              what’s on your mind, and cheer each other on.
+      <section className="welcome__features" aria-labelledby="features-heading">
+        <div className="welcome__features-wrap">
+          <header className="welcome__features-head">
+            <p className="welcome__features-eyebrow">Inside the membership</p>
+            <h2 id="features-heading" className="welcome__features-title">
+              Community, events &amp; wellness
+            </h2>
+            <p className="welcome__features-lede">
+              Beyond hair stories — this is what your Inner Circle login opens up: neighborhood-style
+              rooms, real gatherings on the calendar, and gentle wellness you can do from your own space.
             </p>
+          </header>
+          <div className="welcome__grid">
+            <article className="welcome__card welcome__card--home">
+              <div className="welcome__card-photo-wrap">
+                <img src={FEATURE_PHOTOS[0].src} alt={FEATURE_PHOTOS[0].alt} loading="lazy" decoding="async" />
+              </div>
+              <div className="welcome__card-body">
+                <h3>Community forum</h3>
+                <p>
+                  Topic rooms for health, career, healing, parenting, and more — pull up a chair, share
+                  what’s on your mind, and cheer each other on.
+                </p>
+              </div>
+            </article>
+            <article className="welcome__card welcome__card--home">
+              <div className="welcome__card-photo-wrap">
+                <img src={FEATURE_PHOTOS[1].src} alt={FEATURE_PHOTOS[1].alt} loading="lazy" decoding="async" />
+              </div>
+              <div className="welcome__card-body">
+                <h3>Events &amp; RSVPs</h3>
+                <p>
+                  Virtual meetups and local gatherings — mark your calendar like a kitchen fridge full
+                  of save-the-dates.
+                </p>
+              </div>
+            </article>
+            <article className="welcome__card welcome__card--home">
+              <div className="welcome__card-photo-wrap">
+                <img src={FEATURE_PHOTOS[2].src} alt={FEATURE_PHOTOS[2].alt} loading="lazy" decoding="async" />
+              </div>
+              <div className="welcome__card-body">
+                <h3>Wellness &amp; growth</h3>
+                <p>
+                  Daily affirmations and gentle challenges — small rituals that feel doable from your own
+                  space.
+                </p>
+              </div>
+            </article>
           </div>
-        </article>
-        <article className="welcome__card welcome__card--home">
-          <div className="welcome__card-photo-wrap">
-            <img src={FEATURE_PHOTOS[1].src} alt={FEATURE_PHOTOS[1].alt} loading="lazy" decoding="async" />
-          </div>
-          <div className="welcome__card-body">
-            <h3>Events &amp; RSVPs</h3>
-            <p>
-              Virtual meetups and local gatherings — mark your calendar like a kitchen fridge full
-              of save-the-dates.
-            </p>
-          </div>
-        </article>
-        <article className="welcome__card welcome__card--home">
-          <div className="welcome__card-photo-wrap">
-            <img src={FEATURE_PHOTOS[2].src} alt={FEATURE_PHOTOS[2].alt} loading="lazy" decoding="async" />
-          </div>
-          <div className="welcome__card-body">
-            <h3>Wellness &amp; growth</h3>
-            <p>
-              Daily affirmations and gentle challenges — small rituals that feel doable from your own
-              space.
-            </p>
-          </div>
-        </article>
+        </div>
       </section>
 
       <footer className="welcome__footer">
@@ -567,6 +583,14 @@ export function Welcome() {
           object-position: center top;
           display: block;
         }
+        .welcome__crown-post-photo--focus-lower {
+          background: linear-gradient(165deg, #b8a8cf 0%, #8e7aa3 45%, #6d5d7a 100%);
+        }
+        .welcome__crown-post-photo--focus-lower img {
+          object-position: center 92%;
+          transform: scale(1.14);
+          transform-origin: center 90%;
+        }
         .welcome__crown-post-body {
           padding: var(--space-md);
           flex: 1;
@@ -681,12 +705,46 @@ export function Welcome() {
           color: var(--color-ink-muted);
           flex: 1;
         }
-        .welcome__grid {
+        .welcome__features {
+          padding: var(--space-xl) 0 var(--space-md);
+          border-top: 1px solid rgba(227, 220, 216, 0.85);
+          background: linear-gradient(180deg, rgba(255, 252, 248, 0.85), transparent);
+        }
+        .welcome__features-wrap {
           max-width: 1120px;
           margin: 0 auto;
-          padding: var(--space-xl) var(--space-md);
+          padding: 0 var(--space-md);
+        }
+        .welcome__features-head {
+          text-align: center;
+          max-width: 38rem;
+          margin: 0 auto var(--space-xl);
+        }
+        .welcome__features-eyebrow {
+          margin: 0 0 0.35rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          font-size: 0.72rem;
+          color: var(--color-purple);
+        }
+        .welcome__features-title {
+          font-family: var(--font-display);
+          font-size: clamp(1.45rem, 3.5vw, 1.9rem);
+          margin: 0 0 var(--space-sm);
+          color: var(--color-teal-dark);
+          line-height: 1.25;
+        }
+        .welcome__features-lede {
+          margin: 0;
+          font-size: 1.02rem;
+          line-height: 1.65;
+          color: var(--color-ink-muted);
+        }
+        .welcome__grid {
           display: grid;
           gap: var(--space-lg);
+          padding: 0 0 var(--space-lg);
         }
         @media (min-width: 720px) {
           .welcome__grid {

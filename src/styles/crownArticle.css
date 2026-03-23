@@ -68,6 +68,16 @@
   display: block;
 }
 
+.crown-article__hero--focus-lower {
+  background: linear-gradient(165deg, #b8a8cf 0%, #8e7aa3 45%, #6d5d7a 100%);
+}
+
+.crown-article__hero--focus-lower img {
+  object-position: center 92%;
+  transform: scale(1.12);
+  transform-origin: center 90%;
+}
+
 .crown-article__body p {
   margin: 0 0 1rem;
   font-size: 1.05rem;
