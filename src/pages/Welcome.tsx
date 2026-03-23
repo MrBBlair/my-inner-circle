@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import hero1 from "../assets/welcome/hero-1.png";
 import hero2 from "../assets/welcome/hero-2.png";
@@ -6,9 +7,7 @@ import hero3 from "../assets/welcome/hero-3.png";
 import featureCommunity from "../assets/welcome/feature-community.png";
 import featureEvents from "../assets/welcome/feature-events.png";
 import featureWellness from "../assets/welcome/feature-wellness.png";
-import imgSisterLocs from "../assets/welcome/welcome-sister-locs.png";
-import imgStraightHair from "../assets/welcome/welcome-straight-hair.png";
-import imgBraids from "../assets/welcome/welcome-braids.png";
+import { CROWN_BLOG_POSTS, CROWN_GUIDES } from "../content/crownChronicles";
 
 /** Bundled illustrations — African American women only (see footer note). */
 const HERO_PHOTOS = [
@@ -41,66 +40,16 @@ const FEATURE_PHOTOS = [
   },
 ] as const;
 
-/** Short reads on care, styling, and showing up as you are — by hair type. */
-const HAIR_TYPE_GUIDES = [
-  {
-    src: imgSisterLocs,
-    label: "Sister locs",
-    alt: "Illustration of an African American woman with sisterlocks",
-    excerpt:
-      "Retwist schedules, buildup, and how to keep your parts happy — without treating your crown like a chore list.",
-    body: "Sister locs thrive on consistency, not stress. Space out retwists enough that your roots don’t feel tight, rinse thoroughly after workouts or swim days, and reach for lightweight moisture that won’t cake. If buildup shows up, clarify gently and follow with something nourishing — your scalp deserves the same patience you give the rest of you.",
-  },
-  {
-    src: imgStraightHair,
-    label: "Straight hair",
-    alt: "Illustration of an African American woman with sleek straight hair",
-    excerpt:
-      "Silk presses, heat balance, and humidity — how to enjoy sleek styles while keeping strands strong between appointments.",
-    body: "Straightened styles are allowed to be fun, not fragile. Keep heat on a reasonable setting, use a heat protectant every time, and plan recovery days with braids or buns when you can. In humid seasons, anti-humidity serums can help — but the real flex is listening when your hair asks for a wash-and-go reset instead of another pass with the iron.",
-  },
-  {
-    src: imgBraids,
-    label: "Braids",
-    alt: "Illustration of an African American woman with braided hairstyle",
-    excerpt:
-      "Knotless, box braids, twists — tension, edges, and wash day so protective styles stay protective.",
-    body: "If it hurts when you leave the chair, speak up — tension can cost you edges. Oil your scalp lightly as needed, cleanse without roughing up the parts, and don’t keep a style in past its welcome. When you take braids down, detangle slowly and deep condition; that’s how the next install starts on healthy ground.",
-  },
-] as const;
-
-const CURRENT_BLOG_POSTS = [
-  {
-    id: "locs-moisture",
-    dateISO: "2025-03-12",
-    dateLabel: "March 12, 2025",
-    category: "Sister locs",
-    title: "Moisture that actually stays in your locs",
-    excerpt:
-      "The difference between wet hair and hydrated locs — plus the leave-in vs. oil order that finally clicked for our editors.",
-    body: "Spraying water alone often evaporates before your hair can drink. Try layering: dampen, add a water-based leave-in or light cream to the length of your locs, then seal lightly with oil on the ends if they feel dry — not a heavy grease mask on the whole head unless that’s what your scalp likes. Pay attention to how your locs feel two days later; that feedback is more honest than any routine you saw online.",
-    src: imgSisterLocs,
-    alt: "Illustration of an African American woman with sisterlocks",
-    readMins: 4,
-  },
-  {
-    id: "braid-tension",
-    dateISO: "2025-03-08",
-    dateLabel: "March 8, 2025",
-    category: "Braids",
-    title: "Braid day without the tension headache",
-    excerpt:
-      "What to ask your braider for, how to check tension at the mirror, and when to take a style down early — guilt-free.",
-    body: "You’re paying for a service, not permission to be in pain. Ask for knotless or larger sections if your scalp is sensitive, and check the first row before they finish the whole head — adjustments are easier early. Headaches the same night, bumps along the parts, or pain when you raise your brows are signs to loosen or remove. Protective styles only protect when your follicles aren’t fighting for air.",
-    src: imgBraids,
-    alt: "Illustration of an African American woman with braided hairstyle",
-    readMins: 5,
-  },
-] as const;
-
 export function Welcome() {
   const { user, enterPreview } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash === "#crown-heading") {
+      document.getElementById("crown-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [location.hash, location.pathname]);
 
   const handlePreviewEnter = () => {
     enterPreview();
@@ -217,28 +166,29 @@ export function Welcome() {
             Current on the blog
           </h3>
           <ul className="welcome__crown-featured" aria-labelledby="crown-current">
-            {CURRENT_BLOG_POSTS.map((post) => (
+            {CROWN_BLOG_POSTS.map((post) => (
               <li key={post.id}>
-                <article className="welcome__crown-post">
-                  <div className="welcome__crown-post-photo">
-                    <img src={post.src} alt={post.alt} loading="lazy" decoding="async" />
-                  </div>
-                  <div className="welcome__crown-post-body">
-                    <p className="welcome__crown-post-meta">
-                      <time dateTime={post.dateISO}>{post.dateLabel}</time>
-                      <span aria-hidden> · </span>
-                      <span className="welcome__crown-post-cat">{post.category}</span>
-                      <span aria-hidden> · </span>
-                      <span>{post.readMins} min read</span>
-                    </p>
-                    <h4 className="welcome__crown-post-title">{post.title}</h4>
-                    <p className="welcome__crown-post-excerpt">{post.excerpt}</p>
-                    <details className="welcome__crown-details">
-                      <summary>Continue reading</summary>
-                      <p>{post.body}</p>
-                    </details>
-                  </div>
-                </article>
+                <Link to={`/crown/blog/${post.slug}`} className="welcome__crown-post-link">
+                  <article className="welcome__crown-post">
+                    <div className="welcome__crown-post-photo">
+                      <img src={post.src} alt={post.alt} loading="lazy" decoding="async" />
+                    </div>
+                    <div className="welcome__crown-post-body">
+                      <p className="welcome__crown-post-meta">
+                        <time dateTime={post.dateISO}>{post.dateLabel}</time>
+                        <span aria-hidden> · </span>
+                        <span className="welcome__crown-post-cat">{post.category}</span>
+                        <span aria-hidden> · </span>
+                        <span>{post.readMins} min read</span>
+                      </p>
+                      <h4 className="welcome__crown-post-title">{post.title}</h4>
+                      <p className="welcome__crown-post-excerpt">{post.excerpt}</p>
+                      <span className="welcome__crown-more">
+                        Continue reading <span aria-hidden>→</span>
+                      </span>
+                    </div>
+                  </article>
+                </Link>
               </li>
             ))}
           </ul>
@@ -247,19 +197,22 @@ export function Welcome() {
             Guides by hair type
           </h3>
           <ul className="welcome__crown-grid" aria-labelledby="crown-guides">
-            {HAIR_TYPE_GUIDES.map((item) => (
-              <li key={item.label} className="welcome__crown-card">
-                <div className="welcome__crown-card-photo">
-                  <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
-                </div>
-                <div className="welcome__crown-card-copy">
-                  <h4 className="welcome__crown-card-title">{item.label}</h4>
-                  <p className="welcome__crown-card-excerpt">{item.excerpt}</p>
-                  <details className="welcome__crown-details welcome__crown-details--compact">
-                    <summary>Read the guide</summary>
-                    <p>{item.body}</p>
-                  </details>
-                </div>
+            {CROWN_GUIDES.map((item) => (
+              <li key={item.slug}>
+                <Link to={`/crown/guide/${item.slug}`} className="welcome__crown-card-link">
+                  <article className="welcome__crown-card">
+                    <div className="welcome__crown-card-photo">
+                      <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+                    </div>
+                    <div className="welcome__crown-card-copy">
+                      <h4 className="welcome__crown-card-title">{item.label}</h4>
+                      <p className="welcome__crown-card-excerpt">{item.excerpt}</p>
+                      <span className="welcome__crown-more welcome__crown-more--compact">
+                        Read the guide <span aria-hidden>→</span>
+                      </span>
+                    </div>
+                  </article>
+                </Link>
               </li>
             ))}
           </ul>
@@ -634,9 +587,10 @@ export function Welcome() {
         }
         .welcome__crown-post-title {
           margin: 0 0 0.5rem;
+          font-family: var(--font-display);
           font-size: 1.08rem;
           line-height: 1.35;
-          color: var(--color-ink);
+          color: var(--color-teal-dark);
         }
         .welcome__crown-post-excerpt {
           margin: 0 0 var(--space-sm);
@@ -644,6 +598,32 @@ export function Welcome() {
           line-height: 1.55;
           color: var(--color-ink-muted);
           flex: 1;
+        }
+        .welcome__crown-post-link,
+        .welcome__crown-card-link {
+          text-decoration: none;
+          color: inherit;
+          display: block;
+          border-radius: 18px;
+          transition: box-shadow 0.18s ease, transform 0.18s ease;
+        }
+        .welcome__crown-post-link:focus-visible,
+        .welcome__crown-card-link:focus-visible {
+          outline: 2px solid var(--color-teal-dark);
+          outline-offset: 3px;
+        }
+        .welcome__crown-post-link:hover .welcome__crown-post,
+        .welcome__crown-card-link:hover .welcome__crown-card {
+          box-shadow: 0 14px 36px rgba(45, 42, 50, 0.11);
+        }
+        .welcome__crown-more {
+          margin-top: auto;
+          font-weight: 700;
+          font-size: 0.88rem;
+          color: var(--color-teal-dark);
+        }
+        .welcome__crown-more--compact {
+          font-size: 0.85rem;
         }
         .welcome__crown-grid {
           list-style: none;
@@ -688,10 +668,11 @@ export function Welcome() {
         }
         .welcome__crown-card-title {
           margin: 0 0 0.4rem;
-          font-size: 1rem;
-          font-weight: 800;
+          font-family: var(--font-display);
+          font-size: 1.05rem;
+          font-weight: 700;
           letter-spacing: 0.02em;
-          color: var(--color-ink);
+          color: var(--color-teal-dark);
         }
         .welcome__crown-card-excerpt {
           margin: 0 0 var(--space-sm);
@@ -699,32 +680,6 @@ export function Welcome() {
           line-height: 1.55;
           color: var(--color-ink-muted);
           flex: 1;
-        }
-        .welcome__crown-details {
-          margin-top: auto;
-          text-align: left;
-        }
-        .welcome__crown-details summary {
-          cursor: pointer;
-          font-weight: 700;
-          font-size: 0.88rem;
-          color: var(--color-teal-dark);
-          list-style-position: outside;
-        }
-        .welcome__crown-details summary:hover {
-          text-decoration: underline;
-        }
-        .welcome__crown-details[open] summary {
-          margin-bottom: 0.5rem;
-        }
-        .welcome__crown-details p {
-          margin: 0;
-          font-size: 0.9rem;
-          line-height: 1.6;
-          color: var(--color-ink-muted);
-        }
-        .welcome__crown-details--compact summary {
-          font-size: 0.85rem;
         }
         .welcome__grid {
           max-width: 1120px;

@@ -6,6 +6,8 @@ import { MarketingLayout } from "./components/MarketingLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { SidebarAnnouncements } from "./components/SidebarAnnouncements";
 import { CommunityGuidelines } from "./pages/CommunityGuidelines";
+import { CrownBlogArticlePage } from "./pages/CrownBlogArticlePage";
+import { CrownGuideArticlePage } from "./pages/CrownGuideArticlePage";
 import { CommunityHubPage } from "./pages/CommunityHubPage";
 import { DirectoryPage } from "./pages/DirectoryPage";
 import { EventsPage } from "./pages/EventsPage";
@@ -63,6 +65,8 @@ export default function App() {
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/guidelines" element={<CommunityGuidelines />} />
         <Route path="/contact" element={<PublicContact />} />
+        <Route path="/crown/blog/:slug" element={<CrownBlogArticlePage />} />
+        <Route path="/crown/guide/:slug" element={<CrownGuideArticlePage />} />
       </Route>
 
       <Route element={<AppLayout />}>
