@@ -30,6 +30,13 @@
   --bottom-nav-h: 4.5rem;
 }
 
+@media (max-width: 899px) {
+  :root {
+    /* App header: logo row + horizontal scroll nav */
+    --header-h: 6.85rem;
+  }
+}
+
 *,
 *::before,
 *::after {

@@ -4,12 +4,33 @@ import { BrandLogo } from "./BrandLogo";
 import { TIER_LABELS } from "../lib/storage";
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
-  isActive ? "nav-desktop__link nav-desktop__link--active" : "nav-desktop__link";
+  isActive ? "app-nav__link app-nav__link--active" : "app-nav__link";
+
+const BASE_NAV: { to: string; label: string; end?: boolean }[] = [
+  { to: "/app", label: "Home", end: true },
+  { to: "/forum", label: "Neighborhood" },
+  { to: "/events", label: "Events" },
+  { to: "/wellness", label: "Wellness" },
+  { to: "/resources", label: "Resources" },
+  { to: "/community", label: "Circle" },
+  { to: "/support", label: "Support" },
+];
 
 export function AppHeader() {
   const { user, logout } = useAuth();
 
   if (!user || !user.onboardingComplete) return null;
+
+  const navItems = user.isModerator
+    ? [...BASE_NAV, { to: "/moderation", label: "Moderation" as const }]
+    : BASE_NAV;
+
+  const renderPrimaryLinks = () =>
+    navItems.map(({ to, label, end }) => (
+      <NavLink key={to} to={to} className={navClass} end={Boolean(end)}>
+        {label}
+      </NavLink>
+    ));
 
   return (
     <header className="app-header">
@@ -23,32 +44,7 @@ export function AppHeader() {
           </span>
         </Link>
         <nav className="nav-desktop" aria-label="Primary">
-          <NavLink to="/app" className={navClass} end>
-            Home
-          </NavLink>
-          <NavLink to="/forum" className={navClass}>
-            Neighborhood
-          </NavLink>
-          <NavLink to="/events" className={navClass}>
-            Events
-          </NavLink>
-          <NavLink to="/wellness" className={navClass}>
-            Wellness
-          </NavLink>
-          <NavLink to="/resources" className={navClass}>
-            Resources
-          </NavLink>
-          <NavLink to="/community" className={navClass}>
-            Circle
-          </NavLink>
-          <NavLink to="/support" className={navClass}>
-            Support
-          </NavLink>
-          {user.isModerator && (
-            <NavLink to="/moderation" className={navClass}>
-              Moderation
-            </NavLink>
-          )}
+          {renderPrimaryLinks()}
         </nav>
         <div className="app-header__user">
           <span className="app-header__tier" title={TIER_LABELS[user.tier].blurb}>
@@ -59,6 +55,9 @@ export function AppHeader() {
           </button>
         </div>
       </div>
+      <nav className="nav-mobile" aria-label="Primary">
+        <div className="nav-mobile__scroll">{renderPrimaryLinks()}</div>
+      </nav>
       <style>{`
         .app-header {
           position: fixed;
@@ -99,21 +98,58 @@ export function AppHeader() {
           gap: 0.15rem 0.75rem;
           justify-content: center;
         }
-        .nav-desktop__link {
+        .app-nav__link {
           font-weight: 600;
           font-size: 0.92rem;
           color: var(--color-ink-muted);
           text-decoration: none;
           padding: 0.35rem 0.5rem;
           border-radius: 999px;
+          white-space: nowrap;
         }
-        .nav-desktop__link:hover {
+        .app-nav__link:hover {
           color: var(--color-teal-dark);
           background: var(--color-surface);
         }
-        .nav-desktop__link--active {
+        .app-nav__link--active {
           color: var(--color-teal-dark);
           background: var(--color-teal-soft);
+        }
+        .nav-mobile {
+          display: none;
+          border-top: 1px solid var(--color-border);
+          background: rgba(253, 248, 246, 0.97);
+        }
+        .nav-mobile__scroll {
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+          gap: 0.25rem;
+          overflow-x: auto;
+          overflow-y: hidden;
+          padding: 0.4rem var(--space-md) 0.5rem;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: thin;
+        }
+        .nav-mobile__scroll::-webkit-scrollbar {
+          height: 5px;
+        }
+        .nav-mobile__scroll::-webkit-scrollbar-thumb {
+          background: var(--color-border);
+          border-radius: 4px;
+        }
+        .nav-mobile .app-nav__link {
+          flex-shrink: 0;
+          font-size: 0.86rem;
+          padding: 0.5rem 0.65rem;
+          min-height: 2.75rem;
+          display: inline-flex;
+          align-items: center;
+        }
+        @media (max-width: 899px) {
+          .nav-mobile {
+            display: block;
+          }
         }
         .app-header__user {
           display: flex;
