@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { BrandLogo } from "./BrandLogo";
 
 const year = new Date().getFullYear();
 
@@ -7,7 +8,9 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__brand">
-          <strong>The My Inner Circle</strong>
+          <Link to="/" className="site-footer__logo-link" aria-label="The My Inner Circle App — home">
+            <BrandLogo variant="full" size="md" />
+          </Link>
           <p>A digital safe space for women to grow, connect, and move forward with purpose.</p>
         </div>
         <div className="site-footer__cols">
@@ -55,7 +58,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="site-footer__copy">
-          © {year} The My Inner Circle. All rights reserved. This site is a demo; policies are templates
+          © {year} The My Inner Circle App. All rights reserved. This site is a demo; policies are templates
           for review with your attorney.
         </p>
       </div>
@@ -72,13 +75,17 @@ export function SiteFooter() {
         }
         .site-footer__brand {
           margin-bottom: var(--space-lg);
-          max-width: 28rem;
+          max-width: 36rem;
         }
-        .site-footer__brand strong {
-          font-family: var(--font-display);
-          font-size: 1.15rem;
-          display: block;
-          margin-bottom: 0.35rem;
+        .site-footer__logo-link {
+          display: inline-flex;
+          line-height: 0;
+          margin-bottom: var(--space-sm);
+          text-decoration: none;
+          color: inherit;
+        }
+        .site-footer__logo-link:hover {
+          opacity: 0.92;
         }
         .site-footer__brand p {
           margin: 0;

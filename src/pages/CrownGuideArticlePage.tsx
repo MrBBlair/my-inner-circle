@@ -43,7 +43,7 @@ export function CrownGuideArticlePage() {
         <Link to="/signup">Join the Inner Circle</Link> — bring your questions to the neighborhood when you are ready.
       </p>
       <p className="crown-article__credit">
-        Artwork on this page is original illustration for The My Inner Circle; not photographs of real members.
+        Artwork on this page is original illustration for The My Inner Circle App; not photographs of real members.
       </p>
     </article>
   );

@@ -61,7 +61,7 @@ export function Welcome() {
       <header className="welcome__hero">
         <div className="welcome__hero-grid">
           <div className="welcome__hero-inner">
-            <p className="welcome__eyebrow">The My Inner Circle</p>
+            <p className="welcome__eyebrow">The My Inner Circle App</p>
             <h1 className="welcome__headline">
               Join your safe space to grow, connect, and move forward with purpose.
             </h1>
@@ -287,7 +287,7 @@ export function Welcome() {
         </p>
         <p className="welcome__photo-credit">
           This page centers African American women in original artwork only. Portraits and scenes are
-          AI-generated illustrations made for The My Inner Circle (preview); they are not photographs
+          AI-generated illustrations made for The My Inner Circle App (preview); they are not photographs
           of real members.
         </p>
       </footer>

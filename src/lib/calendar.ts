@@ -19,7 +19,7 @@ export function buildICS(opts: {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//My Inner Circle//EN",
+    "PRODID:-//The My Inner Circle App//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",

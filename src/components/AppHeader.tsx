@@ -35,12 +35,12 @@ export function AppHeader() {
   return (
     <header className="app-header">
       <div className="app-header__inner">
-        <Link to="/" className="app-header__brand" aria-label="The My Inner Circle — back to welcome page">
+        <Link to="/" className="app-header__brand" aria-label="The My Inner Circle App — back to welcome page">
           <span className="app-header__logo-mobile">
-            <BrandLogo variant="mark" size="sm" idSuffix="app-m" />
+            <BrandLogo variant="mark" size="sm" />
           </span>
           <span className="app-header__logo-desktop">
-            <BrandLogo variant="full" size="sm" idSuffix="app-d" />
+            <BrandLogo variant="full" size="sm" />
           </span>
         </Link>
         <nav className="nav-desktop" aria-label="Primary">
@@ -72,7 +72,7 @@ export function AppHeader() {
         .app-header__inner {
           max-width: 1120px;
           margin: 0 auto;
-          padding: 0.55rem var(--space-md);
+          padding: 0.4rem var(--space-md);
           display: flex;
           align-items: center;
           gap: var(--space-md);
@@ -127,7 +127,7 @@ export function AppHeader() {
           gap: 0.25rem;
           overflow-x: auto;
           overflow-y: hidden;
-          padding: 0.4rem var(--space-md) 0.5rem;
+          padding: 0.3rem var(--space-md) 0.4rem;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: thin;
         }
@@ -141,8 +141,8 @@ export function AppHeader() {
         .nav-mobile .app-nav__link {
           flex-shrink: 0;
           font-size: 0.86rem;
-          padding: 0.5rem 0.65rem;
-          min-height: 2.75rem;
+          padding: 0.4rem 0.65rem;
+          min-height: 2.5rem;
           display: inline-flex;
           align-items: center;
         }

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { BrandLogo } from "./BrandLogo";
 
 const year = new Date().getFullYear();
 
@@ -7,12 +8,21 @@ export function LegalStrip() {
   return (
     <footer className="legal-strip">
       <div className="legal-strip__inner">
-        <Link to="/privacy">Privacy</Link>
-        <span aria-hidden>·</span>
-        <Link to="/terms">Terms</Link>
-        <span aria-hidden>·</span>
-        <Link to="/guidelines">Guidelines</Link>
-        <span className="legal-strip__copy">© {year} The My Inner Circle</span>
+        <Link
+          to="/"
+          className="legal-strip__logo"
+          aria-label="The My Inner Circle App — welcome page"
+        >
+          <BrandLogo variant="mark" size="sm" />
+        </Link>
+        <nav className="legal-strip__links" aria-label="Legal">
+          <Link to="/privacy">Privacy</Link>
+          <span aria-hidden>·</span>
+          <Link to="/terms">Terms</Link>
+          <span aria-hidden>·</span>
+          <Link to="/guidelines">Guidelines</Link>
+        </nav>
+        <span className="legal-strip__copy">© {year} The My Inner Circle App</span>
       </div>
       <style>{`
         .legal-strip {
@@ -32,11 +42,28 @@ export function LegalStrip() {
           flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          gap: 0.35rem 0.65rem;
+          gap: 0.45rem 0.75rem;
           font-size: 0.75rem;
           color: var(--color-ink-muted);
         }
-        .legal-strip a {
+        .legal-strip__logo {
+          display: inline-flex;
+          line-height: 0;
+          text-decoration: none;
+          color: inherit;
+          margin-right: 0.15rem;
+        }
+        .legal-strip__logo:hover {
+          opacity: 0.9;
+        }
+        .legal-strip__links {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          gap: 0.35rem 0.65rem;
+        }
+        .legal-strip__links a {
           font-weight: 600;
           color: var(--color-teal-dark);
         }
@@ -49,7 +76,7 @@ export function LegalStrip() {
         @media (min-width: 600px) {
           .legal-strip__copy {
             width: auto;
-            margin-left: 0.5rem;
+            margin-left: 0.35rem;
           }
         }
       `}</style>

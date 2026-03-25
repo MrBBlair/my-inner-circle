@@ -2,6 +2,7 @@
   "name": "my-inner-circle",
   "private": true,
   "version": "1.0.0",
+  "description": "The My Inner Circle App — community, events, and wellness (Vite + React)",
   "type": "module",
   "scripts": {
     "dev": "vite",

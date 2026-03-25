@@ -12,7 +12,7 @@ export function PrivacyPolicy() {
 
       <h2>1. Who we are</h2>
       <p>
-        “The My Inner Circle,” “we,” “us,” and “our” refer to the operator of this website and related services
+        “The My Inner Circle App,” “we,” “us,” and “our” refer to the operator of this website and related services
         (the “Service”). Contact details appear on the <a href="/contact">Contact</a> page.
       </p>
 

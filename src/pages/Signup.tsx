@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
 import type { MembershipTier } from "../types";
 import { TIER_LABELS } from "../lib/storage";
@@ -33,6 +34,9 @@ export function Signup() {
   return (
     <div className="auth-page">
       <div className="auth-card surface">
+        <Link to="/" className="auth-brand" aria-label="The My Inner Circle App — home">
+          <BrandLogo variant="full" size="sm" />
+        </Link>
         <h1>Join the Circle</h1>
         <p className="lede">
           Create your account, then we’ll set up your profile — interests, bio, and the rooms you
@@ -142,6 +146,17 @@ export function Signup() {
           width: 100%;
           max-width: 440px;
           padding: var(--space-lg);
+        }
+        .auth-brand {
+          display: flex;
+          justify-content: center;
+          line-height: 0;
+          margin-bottom: var(--space-md);
+          text-decoration: none;
+          color: inherit;
+        }
+        .auth-brand:hover {
+          opacity: 0.92;
         }
         .auth-legal {
           font-size: 0.85rem;

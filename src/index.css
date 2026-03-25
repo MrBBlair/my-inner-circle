@@ -26,14 +26,14 @@
   --space-lg: 1.5rem;
   --space-xl: 2.25rem;
   --max-read: 42rem;
-  --header-h: 3.75rem;
+  --header-h: 5rem;
   --bottom-nav-h: 4.5rem;
 }
 
 @media (max-width: 899px) {
   :root {
     /* App header: logo row + horizontal scroll nav */
-    --header-h: 6.85rem;
+    --header-h: 8rem;
   }
 }
 
@@ -72,28 +72,49 @@ body {
   flex: 1;
 }
 
-.brand-logo__text {
-  display: inline-flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.2rem;
-  line-height: 1.15;
-  font-family: var(--font-display);
+.brand-logo__img {
+  display: block;
+  /* Long, smooth falloff — no hard ring; blends into --color-bg */
+  -webkit-mask-image: radial-gradient(
+    ellipse 128% 122% at 50% 50%,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.88) 52%,
+    rgba(0, 0, 0, 0.55) 68%,
+    rgba(0, 0, 0, 0.28) 80%,
+    rgba(0, 0, 0, 0.1) 90%,
+    rgba(0, 0, 0, 0.03) 96%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 128% 122% at 50% 50%,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.88) 52%,
+    rgba(0, 0, 0, 0.55) 68%,
+    rgba(0, 0, 0, 0.28) 80%,
+    rgba(0, 0, 0, 0.1) 90%,
+    rgba(0, 0, 0, 0.03) 96%,
+    transparent 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
 }
 
-.brand-logo__the {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-purple);
+.brand-logo__img--mark {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Horizontal lockup: show emblem on the left */
+  object-position: 18% center;
 }
 
-.brand-logo__name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-ink);
+.brand-logo__img--full {
+  object-fit: contain;
 }
 
 .legal-page {

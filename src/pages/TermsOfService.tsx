@@ -12,7 +12,7 @@ export function TermsOfService() {
 
       <h2>1. Agreement</h2>
       <p>
-        By accessing or using The My Inner Circle (the “Service”), you agree to these Terms of Use and our{" "}
+        By accessing or using The My Inner Circle App (the “Service”), you agree to these Terms of Use and our{" "}
         <a href="/privacy">Privacy policy</a> and <a href="/guidelines">Community guidelines</a>. If you do not
         agree, do not use the Service.
       </p>

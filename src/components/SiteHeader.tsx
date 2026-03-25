@@ -12,12 +12,12 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <Link to="/" className="site-header__brand" aria-label="The My Inner Circle home">
+        <Link to="/" className="site-header__brand" aria-label="The My Inner Circle App — home">
           <span className="site-header__logo-mobile">
-            <BrandLogo variant="mark" size="sm" idSuffix="site-m" />
+            <BrandLogo variant="mark" size="sm" />
           </span>
           <span className="site-header__logo-desktop">
-            <BrandLogo variant="full" size="md" idSuffix="site-d" />
+            <BrandLogo variant="full" size="md" />
           </span>
         </Link>
         <nav className="site-header__nav" aria-label="Site">
@@ -57,7 +57,7 @@ export function SiteHeader() {
         .site-header__inner {
           max-width: 1120px;
           margin: 0 auto;
-          padding: 0.5rem var(--space-md);
+          padding: 0.4rem var(--space-md);
           display: flex;
           align-items: center;
           gap: var(--space-sm);

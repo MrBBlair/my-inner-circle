@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
 
 const INTERESTS = [
@@ -44,6 +45,9 @@ export function Onboarding() {
   return (
     <div className="onboarding">
       <div className="onboarding__card surface">
+        <Link to="/" className="onboarding__brand" aria-label="The My Inner Circle App — home">
+          <BrandLogo variant="full" size="sm" />
+        </Link>
         <h1>Your profile</h1>
         <p className="lede">
           Tell us a little about you. This helps personalize your home feed and suggested forum
@@ -95,6 +99,17 @@ export function Onboarding() {
           max-width: 520px;
           margin: 0 auto;
           padding: var(--space-lg);
+        }
+        .onboarding__brand {
+          display: flex;
+          justify-content: center;
+          line-height: 0;
+          margin-bottom: var(--space-md);
+          text-decoration: none;
+          color: inherit;
+        }
+        .onboarding__brand:hover {
+          opacity: 0.92;
         }
         .hint {
           font-size: 0.85rem;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
 
 export function Login() {
@@ -28,6 +29,9 @@ export function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card surface">
+        <Link to="/" className="auth-brand" aria-label="The My Inner Circle App — home">
+          <BrandLogo variant="full" size="sm" />
+        </Link>
         <h1>Welcome back</h1>
         <p className="lede">Sign in to your circle account.</p>
         <button
@@ -101,6 +105,17 @@ export function Login() {
           width: 100%;
           max-width: 400px;
           padding: var(--space-lg);
+        }
+        .auth-brand {
+          display: flex;
+          justify-content: center;
+          line-height: 0;
+          margin-bottom: var(--space-md);
+          text-decoration: none;
+          color: inherit;
+        }
+        .auth-brand:hover {
+          opacity: 0.92;
         }
         .auth-submit {
           width: 100%;
