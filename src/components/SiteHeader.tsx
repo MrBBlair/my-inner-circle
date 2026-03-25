@@ -13,12 +13,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header__inner">
         <Link to="/" className="site-header__brand" aria-label="The My Inner Circle App — home">
-          <span className="site-header__logo-mobile">
-            <BrandLogo variant="mark" size="sm" />
-          </span>
-          <span className="site-header__logo-desktop">
-            <BrandLogo variant="full" size="sm" />
-          </span>
+          <BrandLogo variant="full" size="sm" />
         </Link>
         <nav className="site-header__nav" aria-label="Site">
           <NavLink to="/guidelines" className={linkClass}>
@@ -70,21 +65,6 @@ export function SiteHeader() {
           overflow: visible;
           display: flex;
           align-items: center;
-        }
-        .site-header__logo-desktop {
-          display: none;
-        }
-        .site-header__logo-mobile {
-          display: flex;
-        }
-        /* Same logo breakpoint as AppHeader (900px) */
-        @media (min-width: 900px) {
-          .site-header__logo-desktop {
-            display: flex;
-          }
-          .site-header__logo-mobile {
-            display: none;
-          }
         }
         .site-header__nav {
           display: none;
