@@ -17,7 +17,7 @@ export function SiteHeader() {
             <BrandLogo variant="mark" size="sm" />
           </span>
           <span className="site-header__logo-desktop">
-            <BrandLogo variant="full" size="md" />
+            <BrandLogo variant="full" size="sm" />
           </span>
         </Link>
         <nav className="site-header__nav" aria-label="Site">
@@ -50,14 +50,15 @@ export function SiteHeader() {
           position: sticky;
           top: 0;
           z-index: 50;
-          background: rgba(255, 252, 248, 0.94);
-          backdrop-filter: blur(12px);
+          background: var(--header-bar-bg);
+          backdrop-filter: blur(var(--header-bar-blur));
+          -webkit-backdrop-filter: blur(var(--header-bar-blur));
           border-bottom: 1px solid var(--color-border);
         }
         .site-header__inner {
           max-width: 1120px;
           margin: 0 auto;
-          padding: 0.4rem var(--space-md);
+          padding: var(--header-inner-pad-y) var(--space-md) var(--header-inner-pad-y-bottom);
           display: flex;
           align-items: center;
           gap: var(--space-sm);
@@ -66,6 +67,9 @@ export function SiteHeader() {
           text-decoration: none;
           color: inherit;
           flex-shrink: 0;
+          overflow: visible;
+          display: flex;
+          align-items: center;
         }
         .site-header__logo-desktop {
           display: none;
@@ -73,7 +77,8 @@ export function SiteHeader() {
         .site-header__logo-mobile {
           display: flex;
         }
-        @media (min-width: 640px) {
+        /* Same logo breakpoint as AppHeader (900px) */
+        @media (min-width: 900px) {
           .site-header__logo-desktop {
             display: flex;
           }

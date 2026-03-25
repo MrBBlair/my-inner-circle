@@ -28,6 +28,11 @@
   --max-read: 42rem;
   --header-h: 5rem;
   --bottom-nav-h: 4.5rem;
+  /* Shared marketing + app header chrome (mobile should match) */
+  --header-bar-bg: rgba(253, 248, 246, 0.94);
+  --header-bar-blur: 12px;
+  --header-inner-pad-y: max(0.45rem, env(safe-area-inset-top, 0px));
+  --header-inner-pad-y-bottom: 0.45rem;
 }
 
 @media (max-width: 899px) {
@@ -109,8 +114,11 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Horizontal lockup: show emblem on the left */
-  object-position: 18% center;
+  /* Emblem sits slightly high in the artboard — bias crop so the ring isn’t clipped */
+  object-position: 20% 42%;
+  /* Square marks are tiny; radial mask reads as a hard clip on phones */
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 .brand-logo__img--full {

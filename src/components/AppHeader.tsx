@@ -65,14 +65,15 @@ export function AppHeader() {
           left: 0;
           right: 0;
           z-index: 40;
-          background: rgba(253, 248, 246, 0.92);
-          backdrop-filter: blur(10px);
+          background: var(--header-bar-bg);
+          backdrop-filter: blur(var(--header-bar-blur));
+          -webkit-backdrop-filter: blur(var(--header-bar-blur));
           border-bottom: 1px solid var(--color-border);
         }
         .app-header__inner {
           max-width: 1120px;
           margin: 0 auto;
-          padding: 0.4rem var(--space-md);
+          padding: var(--header-inner-pad-y) var(--space-md) var(--header-inner-pad-y-bottom);
           display: flex;
           align-items: center;
           gap: var(--space-md);
@@ -84,6 +85,7 @@ export function AppHeader() {
           text-decoration: none;
           color: var(--color-ink);
           white-space: nowrap;
+          overflow: visible;
         }
         .app-header__logo-desktop {
           display: none;
@@ -118,7 +120,7 @@ export function AppHeader() {
         .nav-mobile {
           display: none;
           border-top: 1px solid var(--color-border);
-          background: rgba(253, 248, 246, 0.97);
+          background: var(--header-bar-bg);
         }
         .nav-mobile__scroll {
           display: flex;
