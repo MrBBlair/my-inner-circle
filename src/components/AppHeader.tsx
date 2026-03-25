@@ -35,7 +35,7 @@ export function AppHeader() {
   return (
     <header className="app-header">
       <div className="app-header__inner">
-        <Link to="/app" className="app-header__brand">
+        <Link to="/" className="app-header__brand" aria-label="The My Inner Circle — back to welcome page">
           <span className="app-header__logo-mobile">
             <BrandLogo variant="mark" size="sm" idSuffix="app-m" />
           </span>
