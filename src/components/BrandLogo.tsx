@@ -1,4 +1,5 @@
-import brandLogoAsset from "../assets/brand-logo.png";
+import brandLogoFullAsset from "../assets/brand-logo.png";
+import brandLogoMarkAsset from "../assets/brand-logo-mark.png";
 
 type BrandLogoProps = {
   /** Full lockup (default) or cropped mark for tight headers */
@@ -21,7 +22,7 @@ export function BrandLogo({ variant = "full", size = "md", className = "" }: Bra
     return (
       <span className={rootClass} style={{ width: px, height: px, display: "inline-block", flexShrink: 0 }}>
         <img
-          src={brandLogoAsset}
+          src={brandLogoMarkAsset}
           alt=""
           width={px}
           height={px}
@@ -36,7 +37,7 @@ export function BrandLogo({ variant = "full", size = "md", className = "" }: Bra
   return (
     <span className={rootClass} style={{ display: "inline-flex", lineHeight: 0 }}>
       <img
-        src={brandLogoAsset}
+        src={brandLogoFullAsset}
         alt="The My Inner Circle App"
         className="brand-logo__img brand-logo__img--full"
         style={{ height: maxH, width: "auto", maxWidth: "min(100%, 520px)" }}

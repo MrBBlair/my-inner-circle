@@ -113,10 +113,9 @@ body {
 .brand-logo__img--mark {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* Emblem sits slightly high in the artboard — bias crop so the ring isn’t clipped */
-  object-position: 20% 42%;
-  /* Square marks are tiny; radial mask reads as a hard clip on phones */
+  object-fit: contain;
+  object-position: center;
+  /* Square marks are tiny; radial mask reads as a hard clip on phones. */
   -webkit-mask-image: none;
   mask-image: none;
 }
