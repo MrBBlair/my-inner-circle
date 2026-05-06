@@ -40,6 +40,17 @@ export function Welcome() {
   return (
     <div className="welcome">
       <header className="welcome__hero welcome__hero--official">
+        <div className="welcome__hero-photo-strip" aria-hidden="true">
+          <img
+            src={heroMulticultural}
+            alt=""
+            width={2400}
+            height={900}
+            decoding="async"
+            fetchPriority="high"
+            className="welcome__hero-photo-strip__img"
+          />
+        </div>
         <div className="welcome__hero-grid">
           <div className="welcome__hero-inner">
             <p className="welcome__eyebrow">My Inner Circle</p>
@@ -269,6 +280,9 @@ export function Welcome() {
         .welcome__hero--official::before {
           content: none;
         }
+        .welcome__hero-photo-strip {
+          display: none;
+        }
         .welcome__hero-grid {
           position: relative;
           z-index: 1;
@@ -366,14 +380,33 @@ export function Welcome() {
         }
         @media (max-width: 767px) {
           .welcome__hero--official {
-            background-size: contain;
-            background-position: center top;
-            background-color: #1a0a0a;
-            min-height: min(72vh, 560px);
-            align-items: flex-end;
-            justify-content: center;
-            padding-top: clamp(1.5rem, 5vw, 2.5rem);
-            padding-bottom: clamp(1.25rem, 4vw, 2rem);
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            background-image: none;
+            background-color: transparent;
+            min-height: 0;
+            padding: 0;
+          }
+          .welcome__hero-photo-strip {
+            display: block;
+            width: 100%;
+            background: #1a0a0a;
+            line-height: 0;
+          }
+          .welcome__hero-photo-strip__img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            object-position: center top;
+          }
+          .welcome__hero-grid {
+            padding: var(--space-md);
+            max-width: none;
+          }
+          .welcome__hero-inner {
+            max-width: none;
           }
         }
         .welcome__homely {
