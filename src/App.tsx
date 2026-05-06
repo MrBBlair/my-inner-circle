@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppHeader } from "./components/AppHeader";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { BottomNav } from "./components/BottomNav";
 import { LegalStrip } from "./components/LegalStrip";
 import { MarketingLayout } from "./components/MarketingLayout";
@@ -55,7 +56,9 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route element={<MarketingLayout />}>
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
@@ -236,5 +239,6 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
