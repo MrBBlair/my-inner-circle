@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { getCrownBlogPost } from "../content/crownChronicles";
+import { getCrownBlogPost, resolveCrownBlogHeroSrc } from "../content/crownChronicles";
 import "../styles/crownArticle.css";
 
 export function CrownBlogArticlePage() {
@@ -7,15 +7,15 @@ export function CrownBlogArticlePage() {
   const post = getCrownBlogPost(slug);
 
   if (!post) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/crown" replace />;
   }
 
   return (
     <article className="crown-article">
-      <Link to="/#crown-heading" className="crown-article__back">
-        ← Crown chronicles
+      <Link to="/crown" className="crown-article__back">
+        ← My Inner Circle Blog Space
       </Link>
-      <p className="crown-article__eyebrow">Crown chronicles</p>
+      <p className="crown-article__eyebrow">My Inner Circle Blog Space</p>
       <h1 className="crown-article__title">{post.title}</h1>
       <p className="crown-article__meta">
         <time dateTime={post.dateISO}>{post.dateLabel}</time>
@@ -30,7 +30,7 @@ export function CrownBlogArticlePage() {
           (post.photoFocus === "lower" ? " crown-article__hero--focus-lower" : "")
         }
       >
-        <img src={post.src} alt={post.alt} width={800} height={600} />
+        <img src={resolveCrownBlogHeroSrc(post)} alt={post.alt} width={800} height={600} />
       </figure>
       <div className="crown-article__body">
         {post.paragraphs.map((p, i) => (
@@ -51,7 +51,7 @@ export function CrownBlogArticlePage() {
         <Link to="/signup">Join the Inner Circle</Link> to swap routines with neighbors in our forums and events.
       </p>
       <p className="crown-article__credit">
-        Artwork on this page is original illustration for The My Inner Circle App; not photographs of real members.
+        Artwork here is original illustration for My Inner Circle; not photographs of real members without consent.
       </p>
     </article>
   );

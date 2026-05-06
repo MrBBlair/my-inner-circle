@@ -1,7 +1,16 @@
 import { useMemo, useState, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
+import { QrInline } from "../components/QrInline";
 import { buildICS, downloadICS } from "../lib/calendar";
-import { getEvents, saveEvents } from "../lib/storage";
+import { getMonetaryGivingUrl, PUBLIC_WEBSITE_URL } from "../lib/constants";
+import { useAuth } from "../context/AuthContext";
+import {
+  crownBlogReleaseStart,
+  getAllCrownBlogPostsMerged,
+  isCrownBlogReleased,
+} from "../content/crownChronicles";
+import { getEvents, getEventGalleryPhotos, saveEvents } from "../lib/storage";
+import type { CrownBlogPost, EventItem } from "../types";
 
 function startOfMonth(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -24,8 +33,6 @@ export function EventsPage() {
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
 
-  const events = getEvents();
-
   const byDay = useMemo(() => {
     const list = getEvents();
     const map = new Map<number, typeof list>();
@@ -36,6 +43,22 @@ export function EventsPage() {
       const list = map.get(day) ?? [];
       list.push(ev);
       map.set(day, list);
+    });
+    return map;
+  }, [year, month, calVersion]);
+
+  const blogsByDay = useMemo(() => {
+    const map = new Map<number, CrownBlogPost[]>();
+    getAllCrownBlogPostsMerged().forEach((post) => {
+      const dt = crownBlogReleaseStart(post);
+      if (dt.getFullYear() !== year || dt.getMonth() !== month) return;
+      const day = dt.getDate();
+      const list = map.get(day) ?? [];
+      list.push(post);
+      map.set(day, list);
+    });
+    map.forEach((list) => {
+      list.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
     });
     return map;
   }, [year, month, calVersion]);
@@ -58,7 +81,7 @@ export function EventsPage() {
     [user.id],
   );
 
-  const addToCal = (ev: (typeof events)[0]) => {
+  const addToCal = (ev: EventItem) => {
     const start = new Date(ev.dateISO);
     const end = ev.endISO ? new Date(ev.endISO) : new Date(start.getTime() + 60 * 60 * 1000);
     const ics = buildICS({
@@ -76,6 +99,27 @@ export function EventsPage() {
   for (let i = 0; i < startWeekday; i++) cells.push(null);
   for (let d = 1; d <= totalDays; d++) cells.push(d);
 
+  const upcomingCombined = useMemo(() => {
+    const startToday = new Date();
+    startToday.setHours(0, 0, 0, 0);
+    type Row = { kind: "event"; ev: EventItem } | { kind: "blog"; post: CrownBlogPost };
+    const rows: Row[] = [];
+    getEvents().forEach((ev) => {
+      if (new Date(ev.dateISO) >= startToday) rows.push({ kind: "event", ev });
+    });
+    getAllCrownBlogPostsMerged().forEach((post) => {
+      if (crownBlogReleaseStart(post) >= startToday) rows.push({ kind: "blog", post });
+    });
+    rows.sort((a, b) => {
+      const ta =
+        a.kind === "event" ? new Date(a.ev.dateISO).getTime() : crownBlogReleaseStart(a.post).getTime();
+      const tb =
+        b.kind === "event" ? new Date(b.ev.dateISO).getTime() : crownBlogReleaseStart(b.post).getTime();
+      return ta - tb;
+    });
+    return rows;
+  }, [calVersion]);
+
   const prevMonth = () => setCursor(new Date(year, month - 1, 1));
   const nextMonth = () => setCursor(new Date(year, month + 1, 1));
 
@@ -83,8 +127,8 @@ export function EventsPage() {
     <div>
       <h1 className="page-title">Events calendar</h1>
       <p className="lede">
-        Virtual meetups and local gatherings. RSVP to save your spot, then add the event to your
-        calendar app.
+        Gatherings and <strong>Blog Space</strong> releases appear on the calendar by title and date. Tap an item for
+        details; RSVP and add-to-calendar below are for events.
       </p>
 
       <div className="cal-toolbar surface">
@@ -114,10 +158,31 @@ export function EventsPage() {
               <ul className="cal-events">
                 {(byDay.get(day) ?? []).map((ev) => (
                   <li key={ev.id}>
-                    <span className="cal-pill">{ev.virtual ? "Online" : "Local"}</span>
-                    <span className="cal-ev-title">{ev.title}</span>
+                    <Link
+                      to={`/events/${ev.id}`}
+                      className="cal-ev-link"
+                      aria-label={`${ev.title}, ${ev.virtual ? "Online" : "Local event"}. Open full details.`}
+                    >
+                      <span className="cal-pill">{ev.virtual ? "Online" : "Local"}</span>
+                      <span className="cal-ev-title">{ev.title}</span>
+                    </Link>
                   </li>
                 ))}
+                {(blogsByDay.get(day) ?? []).map((post) => {
+                  const released = isCrownBlogReleased(post);
+                  return (
+                    <li key={`blog-${post.slug}`}>
+                      <Link
+                        to={`/crown/blog/${post.slug}`}
+                        className={"cal-ev-link" + (released ? "" : " cal-ev-link--upcoming")}
+                        aria-label={`${post.title}. Blog Space release${released ? "" : " (opens on release date)"}.`}
+                      >
+                        <span className="cal-pill cal-pill--blog">{released ? "Blog" : "Blog · soon"}</span>
+                        <span className="cal-ev-title">{post.title}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ),
@@ -125,23 +190,25 @@ export function EventsPage() {
       </div>
 
       <section style={{ marginTop: "var(--space-xl)" }} aria-labelledby="upcoming-heading">
-        <h2 id="upcoming-heading" style={{ fontSize: "1.2rem" }}>
-          Upcoming &amp; RSVP
-        </h2>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-md)", marginBottom: "var(--space-md)" }}>
+          <h2 id="upcoming-heading" style={{ fontSize: "1.2rem", margin: 0 }}>
+            Upcoming events &amp; blog releases
+          </h2>
+          <QrInline value={PUBLIC_WEBSITE_URL} caption="QR to marketing site for flyers" />
+        </div>
         <div className="card-list">
-          {events
-            .filter((e) => new Date(e.dateISO) >= new Date(new Date().setHours(0, 0, 0, 0)))
-            .sort((a, b) => (a.dateISO > b.dateISO ? 1 : -1))
-            .map((ev) => {
-              const going = ev.rsvpUserIds.includes(user.id);
-              return (
-                <article key={ev.id} className="surface" style={{ padding: "var(--space-md)" }}>
+          {upcomingCombined.length === 0 ? (
+            <div className="empty-state">No upcoming events or scheduled blog releases.</div>
+          ) : (
+            upcomingCombined.map((row) =>
+              row.kind === "event" ? (
+                <article key={row.ev.id} className="surface" style={{ padding: "var(--space-md)" }}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
-                    <h3 style={{ margin: 0, flex: "1 1 200px" }}>{ev.title}</h3>
-                    <span className="tag tag-teal">{ev.virtual ? "Virtual" : "In person"}</span>
+                    <h3 style={{ margin: 0, flex: "1 1 200px" }}>{row.ev.title}</h3>
+                    <span className="tag tag-teal">{row.ev.virtual ? "Virtual" : "In person"}</span>
                   </div>
                   <p style={{ color: "var(--color-ink-muted)", margin: "0.35rem 0" }}>
-                    {new Date(ev.dateISO).toLocaleString(undefined, {
+                    {new Date(row.ev.dateISO).toLocaleString(undefined, {
                       weekday: "long",
                       month: "long",
                       day: "numeric",
@@ -149,27 +216,85 @@ export function EventsPage() {
                       minute: "2-digit",
                     })}
                     {" · "}
-                    {ev.location}
+                    {row.ev.location}
                   </p>
-                  <p style={{ margin: "0 0 0.75rem" }}>{ev.description}</p>
+                  <p style={{ margin: "0 0 0.75rem" }}>{row.ev.description}</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                     <button
                       type="button"
-                      className={going ? "btn btn-secondary" : "btn btn-primary"}
-                      onClick={() => toggleRsvp(ev.id)}
+                      className={row.ev.rsvpUserIds.includes(user.id) ? "btn btn-secondary" : "btn btn-primary"}
+                      onClick={() => toggleRsvp(row.ev.id)}
                     >
-                      {going ? "Undo RSVP" : "RSVP"}
+                      {row.ev.rsvpUserIds.includes(user.id) ? "Undo RSVP" : "RSVP"}
                     </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => addToCal(ev)}>
+                    <button type="button" className="btn btn-secondary" onClick={() => addToCal(row.ev)}>
                       Add to calendar
                     </button>
+                    <Link className="btn btn-secondary" to={`/events/${row.ev.id}`}>
+                      Details &amp; QR
+                    </Link>
+                    <a
+                      className="btn btn-heart"
+                      href={row.ev.donationUrl || getMonetaryGivingUrl()}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Give
+                    </a>
                   </div>
                   <p style={{ fontSize: "0.85rem", color: "var(--color-ink-muted)", margin: "0.5rem 0 0" }}>
-                    {ev.rsvpUserIds.length} attending
+                    {row.ev.rsvpUserIds.length} attending
                   </p>
                 </article>
-              );
-            })}
+              ) : (
+                <article key={`blog-${row.post.slug}`} className="surface" style={{ padding: "var(--space-md)" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                    <h3 style={{ margin: 0, flex: "1 1 200px" }}>{row.post.title}</h3>
+                    <span className="tag" style={{ background: "var(--color-purple-soft)", color: "var(--color-purple)" }}>
+                      Blog release
+                    </span>
+                    {!isCrownBlogReleased(row.post) ? (
+                      <span className="tag">Upcoming</span>
+                    ) : null}
+                  </div>
+                  <p style={{ color: "var(--color-ink-muted)", margin: "0.35rem 0" }}>
+                    {crownBlogReleaseStart(row.post).toLocaleDateString(undefined, {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    })}{" "}
+                    · Blog Space (live at start of day)
+                  </p>
+                  <p style={{ margin: "0 0 0.75rem" }}>{row.post.excerpt}</p>
+                  <Link className="btn btn-secondary" to={`/crown/blog/${row.post.slug}`}>
+                    {isCrownBlogReleased(row.post) ? "Read in Blog Space" : "Open in Blog Space (live on release date)"}
+                  </Link>
+                </article>
+              ),
+            )
+          )}
+        </div>
+      </section>
+
+      <section aria-labelledby="gallery-heading" style={{ marginTop: "var(--space-xl)" }}>
+        <h2 id="gallery-heading" style={{ fontSize: "1.15rem" }}>
+          Event highlights (gallery)
+        </h2>
+        <p className="lede">Snapshots uploaded by admins after gatherings — thank you for showing up generously.</p>
+        <div className="card-list">
+          {getEventGalleryPhotos().length === 0 ? (
+            <div className="empty-state">No gallery photos yet — admins add them from Site admin › Gallery.</div>
+          ) : (
+            getEventGalleryPhotos().map((p) => (
+              <article key={p.id} className="surface" style={{ padding: "var(--space-md)" }}>
+                {p.imageDataUrl ? (
+                  <img src={p.imageDataUrl} alt="" style={{ width: "100%", borderRadius: 12, marginBottom: "0.35rem" }} />
+                ) : null}
+                <h3 style={{ margin: "0.25rem 0", fontSize: "1.05rem" }}>{p.title}</h3>
+                <p style={{ margin: 0, color: "var(--color-ink-muted)", fontSize: "0.95rem" }}>{p.caption}</p>
+              </article>
+            ))
+          )}
         </div>
       </section>
 
@@ -182,35 +307,39 @@ export function EventsPage() {
           margin-bottom: var(--space-md);
         }
         .cal-grid {
+          --cal-line: color-mix(in srgb, var(--color-teal-dark) 36%, var(--color-border));
           display: grid;
           grid-template-columns: repeat(7, minmax(0, 1fr));
           gap: 1px;
-          padding: 0;
-          overflow: hidden;
+          padding: 1px;
+          background: var(--cal-line);
+          border: 1px solid color-mix(in srgb, var(--color-teal-dark) 50%, var(--color-border));
           border-radius: var(--radius-md);
+          overflow: hidden;
         }
         .cal-dow {
           font-size: 0.72rem;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.04em;
-          padding: 0.4rem;
-          background: var(--color-surface);
+          padding: 0.5rem 0.35rem;
+          background: color-mix(in srgb, var(--color-teal-soft) 75%, var(--color-bg-elevated));
           text-align: center;
-          color: var(--color-ink-muted);
+          color: var(--color-teal-dark);
         }
         .cal-cell {
           min-height: 88px;
           background: var(--color-bg-elevated);
-          padding: 0.25rem;
+          padding: 0.3rem;
           font-size: 0.75rem;
         }
         .cal-cell--empty {
-          background: var(--color-surface);
+          background: color-mix(in srgb, var(--color-surface) 92%, var(--color-teal-soft));
         }
         .cal-daynum {
           font-weight: 700;
-          color: var(--color-ink-muted);
+          color: var(--color-teal-dark);
+          font-size: 0.8rem;
         }
         .cal-events {
           list-style: none;
@@ -220,15 +349,42 @@ export function EventsPage() {
         .cal-events li {
           margin-bottom: 0.15rem;
         }
+        .cal-ev-link {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+          padding: 0.15rem 0.2rem;
+          margin: 0 -0.2rem;
+          border-radius: 6px;
+          line-height: 1.3;
+          transition: background 0.12s ease;
+        }
+        .cal-ev-link:hover {
+          background: var(--color-teal-soft);
+        }
+        .cal-ev-link:focus {
+          outline: none;
+        }
+        .cal-ev-link:focus-visible {
+          outline: 2px solid var(--color-teal-dark);
+          outline-offset: 1px;
+        }
         .cal-pill {
           display: inline-block;
           font-size: 0.62rem;
           font-weight: 700;
           padding: 0.05rem 0.25rem;
           border-radius: 4px;
+          background: var(--color-teal-soft);
+          color: var(--color-teal-dark);
+          margin-right: 0.2rem;
+        }
+        .cal-pill--blog {
           background: var(--color-purple-soft);
           color: var(--color-purple);
-          margin-right: 0.2rem;
+        }
+        .cal-ev-link--upcoming {
+          opacity: 0.9;
         }
         .cal-ev-title {
           color: var(--color-ink);

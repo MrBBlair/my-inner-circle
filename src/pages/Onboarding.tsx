@@ -17,6 +17,9 @@ const INTERESTS = [
 export function Onboarding() {
   const { user, updateProfile } = useAuth();
   const [bio, setBio] = useState(user?.bio ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [address, setAddress] = useState(user?.address ?? "");
+  const [birthdateISO, setBirthdateISO] = useState(user?.birthdateISO ?? "");
   const [picked, setPicked] = useState<Set<string>>(
     () => new Set(user?.interests ?? []),
   );
@@ -38,6 +41,9 @@ export function Onboarding() {
     updateProfile({
       bio: bio.trim(),
       interests: Array.from(picked),
+      phone: phone.trim(),
+      address: address.trim(),
+      birthdateISO,
       onboardingComplete: true,
     });
   };
@@ -45,7 +51,7 @@ export function Onboarding() {
   return (
     <div className="onboarding">
       <div className="onboarding__card surface">
-        <Link to="/" className="onboarding__brand" aria-label="The My Inner Circle App — home">
+        <Link to="/" className="onboarding__brand" aria-label="My Inner Circle — home">
           <BrandLogo variant="full" size="sm" />
         </Link>
         <h1>Your profile</h1>
@@ -54,6 +60,47 @@ export function Onboarding() {
           rooms. You can change this anytime later.
         </p>
         <form onSubmit={finish}>
+          <div className="field">
+            <label className="label" htmlFor="phone">
+              Phone
+            </label>
+            <input
+              id="phone"
+              className="input"
+              type="tel"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label className="label" htmlFor="address">
+              Address
+            </label>
+            <textarea
+              id="address"
+              className="textarea"
+              rows={3}
+              required
+              autoComplete="street-address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Same mailing address you use in the directory"
+            />
+          </div>
+          <div className="field">
+            <label className="label" htmlFor="birthdate">
+              Birthday
+            </label>
+            <input
+              id="birthdate"
+              className="input"
+              type="date"
+              required
+              value={birthdateISO}
+              onChange={(e) => setBirthdateISO(e.target.value)}
+            />
+          </div>
           <div className="field">
             <label className="label" htmlFor="bio">
               Short bio

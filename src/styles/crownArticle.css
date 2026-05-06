@@ -69,7 +69,7 @@
 }
 
 .crown-article__hero--focus-lower {
-  background: linear-gradient(165deg, #b8a8cf 0%, #8e7aa3 45%, #6d5d7a 100%);
+  background: linear-gradient(165deg, #ebe0f7 0%, #8946b8 45%, #5c1538 100%);
 }
 
 .crown-article__hero--focus-lower img {
@@ -94,7 +94,7 @@
   padding: var(--space-md);
   background: var(--color-teal-soft);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(74, 124, 120, 0.2);
+  border: 1px solid rgba(137, 36, 86, 0.25);
 }
 
 .crown-article__tips h2 {

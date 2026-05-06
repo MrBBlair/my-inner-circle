@@ -12,7 +12,7 @@ export function TermsOfService() {
 
       <h2>1. Agreement</h2>
       <p>
-        By accessing or using The My Inner Circle App (the “Service”), you agree to these Terms of Use and our{" "}
+        By accessing or using My Inner Circle (the “Service”), you agree to these Terms of Use and our{" "}
         <a href="/privacy">Privacy policy</a> and <a href="/guidelines">Community guidelines</a>. If you do not
         agree, do not use the Service.
       </p>
@@ -20,8 +20,7 @@ export function TermsOfService() {
       <h2>2. The Service</h2>
       <p>
         We provide an online community platform, including discussion spaces, events information, wellness content,
-        and related features. We may change, suspend, or discontinue features at any time. The Service may be offered
-        in tiers with different capabilities.
+        The Service may be offered free of charge; we may change, suspend, or discontinue features at any time.
       </p>
 
       <h2>3. Eligibility</h2>

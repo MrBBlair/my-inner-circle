@@ -1,14 +1,18 @@
 import { Link } from "react-router-dom";
 import { BrandLogo } from "./BrandLogo";
+import { useAuth } from "../context/AuthContext";
 
 const year = new Date().getFullYear();
 
 export function SiteFooter() {
+  const { user } = useAuth();
+  const inApp = Boolean(user?.onboardingComplete);
+
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__brand">
-          <Link to="/" className="site-footer__logo-link" aria-label="The My Inner Circle App — home">
+          <Link to="/" className="site-footer__logo-link" aria-label="My Inner Circle — home">
             <BrandLogo variant="full" size="md" />
           </Link>
           <p>A digital safe space for women to grow, connect, and move forward with purpose.</p>
@@ -35,13 +39,18 @@ export function SiteFooter() {
             <h2 className="site-footer__heading">Connect</h2>
             <ul className="site-footer__list">
               <li>
-                <Link to="/contact">Contact us</Link>
-              </li>
-              <li>
                 <Link to="/login">Member sign in</Link>
               </li>
+              {inApp ? (
+                <li>
+                  <Link to="/app">My Circle</Link>
+                </li>
+              ) : null}
               <li>
-                <Link to="/signup">Create an account</Link>
+                <Link to="/signup">Join</Link>
+              </li>
+              <li>
+                <Link to="/contact">Contact us</Link>
               </li>
             </ul>
           </div>
@@ -58,13 +67,12 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="site-footer__copy">
-          © {year} The My Inner Circle App. All rights reserved. This site is a demo; policies are templates
-          for review with your attorney.
+          © {year} My Inner Circle. All rights reserved.
         </p>
       </div>
       <style>{`
         .site-footer {
-          background: linear-gradient(180deg, #ebe4dc 0%, #e3dcd6 100%);
+          background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-purple-soft) 100%);
           border-top: 1px solid var(--color-border);
           padding: var(--space-xl) var(--space-md) var(--space-lg);
           margin-top: auto;

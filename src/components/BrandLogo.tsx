@@ -12,7 +12,7 @@ const markBoxPx = { sm: 54, md: 68, lg: 84 };
 const fullMaxHeightPx = { sm: 64, md: 78, lg: 100 };
 
 /**
- * The My Inner Circle App — official raster lockup (mark + wordmark).
+ * Official raster lockup (mark + wordmark). Prefer assets that show “My Inner Circle” wording.
  */
 export function BrandLogo({ variant = "full", size = "md", className = "" }: BrandLogoProps) {
   const rootClass = `brand-logo brand-logo--${variant} ${className}`.trim();
@@ -38,7 +38,7 @@ export function BrandLogo({ variant = "full", size = "md", className = "" }: Bra
     <span className={rootClass} style={{ display: "inline-flex", lineHeight: 0 }}>
       <img
         src={brandLogoFullAsset}
-        alt="The My Inner Circle App"
+        alt="My Inner Circle"
         className="brand-logo__img brand-logo__img--full"
         style={{ height: maxH, width: "auto", maxWidth: "min(100%, 520px)" }}
         decoding="async"

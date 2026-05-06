@@ -7,9 +7,10 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { SidebarAnnouncements } from "./components/SidebarAnnouncements";
 import { CommunityGuidelines } from "./pages/CommunityGuidelines";
 import { CrownBlogArticlePage } from "./pages/CrownBlogArticlePage";
-import { CrownGuideArticlePage } from "./pages/CrownGuideArticlePage";
+import { CrownHubPage } from "./pages/CrownHubPage";
 import { CommunityHubPage } from "./pages/CommunityHubPage";
 import { DirectoryPage } from "./pages/DirectoryPage";
+import { EventDetailPage } from "./pages/EventDetailPage";
 import { EventsPage } from "./pages/EventsPage";
 import { GivePage } from "./pages/GivePage";
 import { ForumCategoryPage } from "./pages/ForumCategory";
@@ -17,12 +18,18 @@ import { ForumHome } from "./pages/ForumHome";
 import { HomeFeed } from "./pages/HomeFeed";
 import { Login } from "./pages/Login";
 import { ModerationPage } from "./pages/ModerationPage";
+import { NeighborhoodGroupForumPage } from "./pages/NeighborhoodGroupForumPage";
 import { Onboarding } from "./pages/Onboarding";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import { ProfilePage } from "./pages/ProfilePage";
 import { PublicContact } from "./pages/PublicContact";
+import { ResourceArticlePage } from "./pages/ResourceArticlePage";
 import { ResourcesPage } from "./pages/ResourcesPage";
 import { Signup } from "./pages/Signup";
+import { SignupThanks } from "./pages/SignupThanks";
+import { AccountStatus } from "./pages/AccountStatus";
+import { SharedProfilePage } from "./pages/SharedProfilePage";
+import { SiteAdminDashboard } from "./pages/SiteAdminDashboard";
 import { SupportPage } from "./pages/SupportPage";
 import { TermsOfService } from "./pages/TermsOfService";
 import { ThreadPage } from "./pages/ThreadPage";
@@ -53,6 +60,8 @@ export default function App() {
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/signup/thanks" element={<SignupThanks />} />
+        <Route path="/account-status" element={<AccountStatus />} />
         <Route
           path="/onboarding"
           element={
@@ -65,8 +74,9 @@ export default function App() {
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/guidelines" element={<CommunityGuidelines />} />
         <Route path="/contact" element={<PublicContact />} />
+        <Route path="/crown" element={<CrownHubPage />} />
         <Route path="/crown/blog/:slug" element={<CrownBlogArticlePage />} />
-        <Route path="/crown/guide/:slug" element={<CrownGuideArticlePage />} />
+        <Route path="/crown/guide/*" element={<Navigate to="/crown" replace />} />
       </Route>
 
       <Route element={<AppLayout />}>
@@ -87,6 +97,14 @@ export default function App() {
           }
         />
         <Route
+          path="/forum/group/:slug"
+          element={
+            <ProtectedRoute requireOnboarding>
+              <NeighborhoodGroupForumPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/forum/:slug"
           element={
             <ProtectedRoute requireOnboarding>
@@ -103,6 +121,14 @@ export default function App() {
           }
         />
         <Route
+          path="/events/:eventId"
+          element={
+            <ProtectedRoute requireOnboarding>
+              <EventDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/events"
           element={
             <ProtectedRoute requireOnboarding>
@@ -115,6 +141,14 @@ export default function App() {
           element={
             <ProtectedRoute requireOnboarding>
               <WellnessPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/resources/:slug"
+          element={
+            <ProtectedRoute requireOnboarding>
+              <ResourceArticlePage />
             </ProtectedRoute>
           }
         />
@@ -167,10 +201,26 @@ export default function App() {
           }
         />
         <Route
+          path="/members/:userId"
+          element={
+            <ProtectedRoute requireOnboarding>
+              <SharedProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/support"
           element={
             <ProtectedRoute requireOnboarding>
               <SupportPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requireOnboarding requireSiteAdmin>
+              <SiteAdminDashboard />
             </ProtectedRoute>
           }
         />

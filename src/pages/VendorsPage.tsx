@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { canPost, getVendors, saveVendors } from "../lib/storage";
+import { getVendors, pushAdminNotification, saveVendors } from "../lib/storage";
 
 export function VendorsPage() {
   const { user } = useAuth();
@@ -14,8 +14,6 @@ export function VendorsPage() {
 
   if (!user) return null;
 
-  const allowList = canPost(user.tier);
-
   const list = useMemo(() => {
     return [...getVendors()].sort((a, b) => {
       if (a.circlePartner !== b.circlePartner) return a.circlePartner ? -1 : 1;
@@ -25,7 +23,7 @@ export function VendorsPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!allowList || !businessName.trim() || !category.trim() || !description.trim() || !contactNote.trim())
+    if (!businessName.trim() || !category.trim() || !description.trim() || !contactNote.trim())
       return;
     const item = {
       id: crypto.randomUUID?.() ?? `ven_${Date.now()}`,
@@ -40,6 +38,15 @@ export function VendorsPage() {
       createdAt: new Date().toISOString(),
     };
     saveVendors([item, ...getVendors()]);
+    pushAdminNotification({
+      kind: "vendor_listing",
+      title: "New vendor listing",
+      body: `${user.displayName} submitted "${item.businessName}" to the vendor directory.`,
+      actorId: user.id,
+      actorName: user.displayName,
+      href: "/vendors",
+      relatedId: item.id,
+    });
     setBusinessName("");
     setCategory("");
     setDescription("");
@@ -52,18 +59,11 @@ export function VendorsPage() {
     <div>
       <h1 className="page-title">Vendor space</h1>
       <p className="lede">
-        Black-owned and aligned businesses can share offerings here. “Circle partner” badges are added by
-        moderators in production; this demo lists sample partners and your submissions.
+        Trusted women-led ventures and allied services can share offerings Circle moderators uplift. “Circle partner”
+        badges are managed in production; this demo lists seeded partners alongside member submissions.
       </p>
 
-      {!allowList && (
-        <div className="surface" style={{ padding: "var(--space-md)", marginBottom: "var(--space-md)" }}>
-          <strong>Seedling:</strong> browse vendors. <strong>Bloom+</strong> can submit a listing.
-        </div>
-      )}
-
-      {allowList && (
-        <section className="surface" style={{ padding: "var(--space-md)", marginBottom: "var(--space-lg)" }}>
+      <section className="surface" style={{ padding: "var(--space-md)", marginBottom: "var(--space-lg)" }}>
           <h2 className="h-section">Submit your business</h2>
           <form onSubmit={submit}>
             <div className="field">
@@ -128,7 +128,6 @@ export function VendorsPage() {
             </button>
           </form>
         </section>
-      )}
 
       <section aria-label="Vendor listings">
         <h2 className="h-section">Directory</h2>

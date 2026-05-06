@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
+import { hasApprovedMembership } from "../lib/storage";
+import { DEMO_SITE_ADMIN_EMAIL, DEMO_SITE_ADMIN_PASSWORD } from "../lib/constants";
 
 export function Login() {
   const { user, login, enterPreview } = useAuth();
@@ -11,6 +13,9 @@ export function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  if (user && !hasApprovedMembership(user)) {
+    return <Navigate to="/account-status" replace />;
+  }
   if (user?.onboardingComplete) {
     const to = loc.state?.from?.pathname ?? "/app";
     return <Navigate to={to} replace />;
@@ -29,7 +34,7 @@ export function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card surface">
-        <Link to="/" className="auth-brand" aria-label="The My Inner Circle App — home">
+        <Link to="/" className="auth-brand" aria-label="My Inner Circle — home">
           <BrandLogo variant="full" size="sm" />
         </Link>
         <h1>Welcome back</h1>
@@ -80,12 +85,16 @@ export function Login() {
           </button>
         </form>
         <p className="auth-switch">
-          New here? <Link to="/signup">Create an account</Link>
+          New here? <Link to="/signup">Join</Link>
+        </p>
+        <p className="auth-demo">
+          <strong>Demo site admin:</strong> <code>{DEMO_SITE_ADMIN_EMAIL}</code> / password{" "}
+          <code>{DEMO_SITE_ADMIN_PASSWORD}</code> — opens <Link to="/admin">Site admin</Link> after sign-in.
         </p>
         <p className="auth-demo">
           <strong>Demo moderator:</strong> <code>moderator@innercircle.demo</code> / password{" "}
-          <code>circlecare</code> — opens the Moderation queue. New members can sign up with any
-          email.
+          <code>circlecare</code> — opens the Moderation queue. New self-serve signups stay pending until a site admin
+          approves them in <Link to="/admin">Site admin</Link> → Directory.
         </p>
       </div>
       <Link to="/" className="auth-back">

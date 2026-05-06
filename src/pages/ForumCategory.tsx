@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ForumCategoryPills } from "../components/ForumCategoryPills";
+import { ForumCategoryPills, ForumFauxSearch } from "../components/ForumCategoryPills";
 import { useAuth } from "../context/AuthContext";
 import {
   avatarToneClass,
@@ -14,7 +14,6 @@ import {
   MAX_THREAD_ATTACHMENTS,
 } from "../lib/threadAttachments";
 import {
-  canPost,
   CATEGORY_META,
   getThreads,
   saveThreads,
@@ -57,11 +56,11 @@ export function ForumCategoryPage() {
 
   const meta = CATEGORY_META[categorySlug];
   const threads = getThreads()
-    .filter((t) => t.categorySlug === categorySlug)
+    .filter((t) => t.categorySlug === categorySlug && !t.neighborhoodGroupId)
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   const joined = user.joinedCategories.includes(categorySlug);
-  const allowPost = joined && canPost(user.tier);
+  const allowPost = joined;
 
   const onPickImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
@@ -130,20 +129,13 @@ export function ForumCategoryPage() {
         </div>
       </div>
 
-      <ForumCategoryPills />
+      <ForumCategoryPills trailing={<ForumFauxSearch />} />
 
       {!joined && (
         <div className="nd-alert">
           <strong>Join this space</strong> from the{" "}
           <Link to="/forum">All spaces</Link> overview to follow posts here and surface them on your
           home feed.
-        </div>
-      )}
-
-      {joined && !canPost(user.tier) && (
-        <div className="nd-alert">
-          <strong>Seedling:</strong> read the neighborhood. Upgrade to <strong>Bloom</strong> or{" "}
-          <strong>Inner Circle</strong> to start posts and replies.
         </div>
       )}
 

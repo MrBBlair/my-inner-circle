@@ -4,6 +4,7 @@ import type {
   DirectorySpotlight,
   DonationListing,
   EventItem,
+  NeighborhoodGroup,
   Thread,
   UserProfile,
   VendorListing,
@@ -13,6 +14,7 @@ import {
   getDirectorySpotlights,
   getDonations,
   getEvents,
+  getNeighborhoodGroups,
   getThreads,
   getUsers,
   getVendors,
@@ -20,26 +22,43 @@ import {
   saveDirectorySpotlights,
   saveDonations,
   saveEvents,
+  saveNeighborhoodGroups,
   saveThreads,
   saveUser,
   saveVendors,
 } from "./storage";
+import { DEMO_SITE_ADMIN_DISPLAY_NAME, DEMO_SITE_ADMIN_EMAIL, DEMO_SITE_ADMIN_PASSWORD, getMonetaryGivingUrl } from "./constants";
 import { setStoredPassword } from "./passwordStore";
+import adminBackgroundPhoto from "../assets/welcome/official/hero-multicultural.png";
+import adminProfilePhoto from "../assets/welcome/welcome-straight-hair.png";
+import careBackgroundPhoto from "../assets/welcome/official/impact-wellness-worth.png";
+import careProfilePhoto from "../assets/welcome/welcome-braids.png";
+import jordanBackgroundPhoto from "../assets/welcome/official/hero-transforming-world.png";
+import jordanProfilePhoto from "../assets/welcome/wash-day-hair.png";
+import mayaBackgroundPhoto from "../assets/welcome/official/mission-female-friends.jpg";
+import mayaProfilePhoto from "../assets/welcome/welcome-sister-locs.png";
+
+const DEMO_DONATION_URL = getMonetaryGivingUrl();
 
 const demoMod: UserProfile = {
   id: "user_mod_demo",
   email: "moderator@innercircle.demo",
   displayName: "Circle Care Team",
-  tier: "inner_circle",
   bio: "Here to keep conversations kind, clear, and safe.",
   interests: ["community care", "moderation", "resources"],
   joinedCategories: ["community", "healing", "health", "career", "parenting"],
   isModerator: true,
+  isSiteAdmin: false,
   onboardingComplete: true,
   createdAt: new Date().toISOString(),
   showInDirectory: true,
   directoryHeadline: "Care team & resource navigation",
   directoryOffer: "Help with reports, safety questions, and finding the right room in the circle.",
+  statusLine: "Holding the door open and keeping the circle kind.",
+  profileImageDataUrl: careProfilePhoto,
+  backgroundImageDataUrl: careBackgroundPhoto,
+  phone: "(555) 010-1000",
+  address: "100 Care Way\nColumbus, OH 43215",
 };
 
 /** Sample neighbors so threads and replies show varied names (demo accounts; no passwords). */
@@ -47,26 +66,68 @@ const seedNeighborMaya: UserProfile = {
   id: "user_seed_maya",
   email: "maya.b@innercircle.demo",
   displayName: "Maya B.",
-  tier: "bloom",
   bio: "Mom of two, nonprofit finance, learning to rest without guilt.",
   interests: ["parenting", "career", "community meals"],
   joinedCategories: ["community", "health", "career", "healing", "parenting"],
   isModerator: false,
+  isSiteAdmin: false,
   onboardingComplete: true,
   createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 400).toISOString(),
+  showInDirectory: true,
+  directoryHeadline: "Nonprofit finance & busy mom life",
+  statusLine: "Finding small pockets of rest between big responsibilities.",
+  profileImageDataUrl: mayaProfilePhoto,
+  backgroundImageDataUrl: mayaBackgroundPhoto,
+  phone: "(555) 010-2001",
+  address: "22 Oak Street\nAustin, TX 78701",
 };
 
 const seedNeighborJordan: UserProfile = {
   id: "user_seed_jordan",
   email: "jordan.t@innercircle.demo",
   displayName: "Jordan T.",
-  tier: "inner_circle",
   bio: "Therapist in training · here for real talk about burnout and boundaries.",
   interests: ["healing", "career", "wellness"],
   joinedCategories: ["community", "health", "career", "healing", "parenting"],
   isModerator: false,
+  isSiteAdmin: false,
   onboardingComplete: true,
   createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+  showInDirectory: true,
+  directoryHeadline: "Therapy grad student · burnout & boundaries",
+  statusLine: "Practicing softer boundaries and better mornings.",
+  profileImageDataUrl: jordanProfilePhoto,
+  backgroundImageDataUrl: jordanBackgroundPhoto,
+  phone: "(555) 010-2002",
+  address: "410 River Rd, Apt 3B\nPortland, OR 97201",
+};
+
+/** Local-demo site admin — rotate password before any real deployment */
+const seedSiteAdmin: UserProfile = {
+  id: "mic_site_admin",
+  email: DEMO_SITE_ADMIN_EMAIL,
+  displayName: DEMO_SITE_ADMIN_DISPLAY_NAME,
+  bio: "Curates calendars, broadcasts, approvals, galleries.",
+  interests: [],
+  joinedCategories: ["community", "health", "career", "healing", "parenting"],
+  isModerator: true,
+  isSiteAdmin: true,
+  onboardingComplete: true,
+  createdAt: new Date().toISOString(),
+  statusLine: "Keeping the circle warm, organized, and ready for what is next.",
+  profileImageDataUrl: adminProfilePhoto,
+  backgroundImageDataUrl: adminBackgroundPhoto,
+  phone: "(555) 010-0999",
+  address: "1 Admin Plaza, Suite 200\nVirtual, DM 00001",
+};
+
+const demoNeighborhoodGroup: NeighborhoodGroup = {
+  id: "ng_demo_garden",
+  slug: "garden-chat",
+  name: "Garden Street neighbors",
+  description: "Swap produce, stroller walks, and evening hellos.",
+  approvedAt: new Date().toISOString(),
+  approvedFromRequestId: "req_seed_placeholder",
 };
 
 const seedDonations: DonationListing[] = [
@@ -96,7 +157,7 @@ const seedDonations: DonationListing[] = [
     kind: "services",
     title: "Free resume review (2 slots / month)",
     description:
-      "HR lead offering 30-minute resume and LinkedIn headline feedback for Bloom+ members pivoting roles.",
+      "HR lead offering 30-minute resume and LinkedIn headline feedback for members pivoting roles.",
     logistics: "Virtual; sign up via Contact with subject “Resume circle.”",
     authorId: demoMod.id,
     authorName: demoMod.displayName,
@@ -110,7 +171,7 @@ const seedVendors: VendorListing[] = [
     businessName: "Bloom & Steep Teas",
     category: "Wellness & retail",
     description:
-      "Black-owned loose-leaf blends; Inner Circle members get 10% off first order with code INNERCIRCLE.",
+      "Loose-leaf blends from a microlot family farm; Inner Circle members get 10% off first order with code INNERCIRCLE.",
     websiteUrl: "https://example.com",
     contactNote: "Owner: Janelle · orders@example.com",
     circlePartner: true,
@@ -139,7 +200,7 @@ const seedSpotlights: DirectorySpotlight[] = [
     name: "Sisters Who Read",
     headline: "Monthly hybrid book & rest club",
     description:
-      "Fiction and memoir picks by Black women authors. Chapters in three cities + Zoom option.",
+      "Fiction & memoir salons featuring authors across cultures. Chapters in three cities plus Zoom drops.",
     tags: ["Social", "Literacy", "Rest"],
     linkLabel: "Interest form (demo)",
     linkUrl: "https://example.com",
@@ -255,6 +316,17 @@ const seedThreads: Thread[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 14).toISOString(),
     heartUserIds: [seedNeighborMaya.id],
   },
+  {
+    id: "t_neighborhood_demo",
+    categorySlug: "community",
+    neighborhoodGroupId: demoNeighborhoodGroup.id,
+    title: "Morning hellos — who’s walking today?",
+    authorId: demoMod.id,
+    authorName: demoMod.displayName,
+    body: "Drop your block + rough time — we’ll match walking buddies inside this circle only.",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+    heartUserIds: [],
+  },
 ];
 
 const seedComments: Comment[] = [
@@ -368,6 +440,9 @@ const seedEvents: EventItem[] = [
     virtual: true,
     description: "A gentle start to the week: share one goal and one kindness you’ll offer yourself.",
     rsvpUserIds: [],
+    registrationMode: "rsvp",
+    donationUrl: DEMO_DONATION_URL,
+    ticketPriceUsd: undefined,
   },
   {
     id: "ev_walk",
@@ -380,6 +455,8 @@ const seedEvents: EventItem[] = [
     virtual: false,
     description: "All paces welcome. We’ll pair up for conversation prompts optional.",
     rsvpUserIds: [],
+    registrationMode: "free",
+    donationUrl: DEMO_DONATION_URL,
   },
 ];
 
@@ -399,6 +476,25 @@ export const DEFAULT_ANNOUNCEMENTS: Announcement[] = [
   },
 ];
 
+const SAMPLE_PROFILE_IMAGES = [adminProfilePhoto, careProfilePhoto, mayaProfilePhoto, jordanProfilePhoto];
+const SAMPLE_BACKGROUND_IMAGES = [adminBackgroundPhoto, careBackgroundPhoto, mayaBackgroundPhoto, jordanBackgroundPhoto];
+
+function sampleIndexFor(id: string) {
+  let n = 0;
+  for (let i = 0; i < id.length; i += 1) n = (n + id.charCodeAt(i) * (i + 1)) % 997;
+  return n % SAMPLE_PROFILE_IMAGES.length;
+}
+
+function withSampleProfileMedia(profile: UserProfile, fallbackStatus = "Open to connection, encouragement, and good conversation."): UserProfile {
+  const i = sampleIndexFor(profile.id);
+  return {
+    ...profile,
+    statusLine: profile.statusLine || fallbackStatus,
+    profileImageDataUrl: profile.profileImageDataUrl || SAMPLE_PROFILE_IMAGES[i],
+    backgroundImageDataUrl: profile.backgroundImageDataUrl || SAMPLE_BACKGROUND_IMAGES[i],
+  };
+}
+
 export function ensureSeedData() {
   const users = getUsers();
   if (!users[demoMod.id]) {
@@ -410,6 +506,44 @@ export function ensureSeedData() {
   }
   if (!users[seedNeighborJordan.id]) {
     saveUser(seedNeighborJordan);
+  }
+  if (!users[seedSiteAdmin.id]) {
+    saveUser(seedSiteAdmin);
+    setStoredPassword(seedSiteAdmin.id, DEMO_SITE_ADMIN_PASSWORD);
+  } else if (!users[seedSiteAdmin.id].profileImageDataUrl || !users[seedSiteAdmin.id].backgroundImageDataUrl) {
+    saveUser({
+      ...users[seedSiteAdmin.id],
+      statusLine: users[seedSiteAdmin.id].statusLine || seedSiteAdmin.statusLine,
+      profileImageDataUrl: users[seedSiteAdmin.id].profileImageDataUrl || seedSiteAdmin.profileImageDataUrl,
+      backgroundImageDataUrl: users[seedSiteAdmin.id].backgroundImageDataUrl || seedSiteAdmin.backgroundImageDataUrl,
+    });
+  }
+
+  const seededProfiles = [demoMod, seedNeighborMaya, seedNeighborJordan, seedSiteAdmin];
+  const latestUsers = getUsers();
+  for (const seedProfile of seededProfiles) {
+    const current = latestUsers[seedProfile.id];
+    if (!current) continue;
+    if (!current.profileImageDataUrl || !current.backgroundImageDataUrl || !current.statusLine) {
+      saveUser({
+        ...current,
+        statusLine: current.statusLine || seedProfile.statusLine,
+        profileImageDataUrl: current.profileImageDataUrl || seedProfile.profileImageDataUrl,
+        backgroundImageDataUrl: current.backgroundImageDataUrl || seedProfile.backgroundImageDataUrl,
+      });
+    }
+  }
+
+  const usersWithSeededProfiles = getUsers();
+  for (const profile of Object.values(usersWithSeededProfiles)) {
+    if (!profile.profileImageDataUrl || !profile.backgroundImageDataUrl || !profile.statusLine) {
+      saveUser(withSampleProfileMedia(profile));
+    }
+  }
+
+  const groups = getNeighborhoodGroups();
+  if (!groups.some((g) => g.id === demoNeighborhoodGroup.id)) {
+    saveNeighborhoodGroups([demoNeighborhoodGroup, ...groups]);
   }
 
   let threads = getThreads();

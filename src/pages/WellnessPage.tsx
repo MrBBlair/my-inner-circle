@@ -1,31 +1,14 @@
 import { useMemo, useState } from "react";
+import { AFFIRMATIONS_365 } from "../content/wellnessAffirmations";
+import { getMonthlyChallengeFor } from "../content/wellnessMonthlyChallenges";
 import { useAuth } from "../context/AuthContext";
-import { canJoinChallenges } from "../lib/storage";
+import { affirmationIndexForDay, getLocalDayOfYear } from "../lib/wellnessSchedule";
 
-const AFFIRMATIONS = [
-  "You are allowed to take up space — your needs matter.",
-  "Small steps still move mountains. Progress is not a race.",
-  "Rest is not a reward you earn; it is part of how you thrive.",
-  "Your boundaries are an act of love — for you and for others.",
-  "You can be both healing and hopeful at the same time.",
-  "Showing up imperfectly still counts as showing up.",
-  "Community does not require performance — only presence.",
-];
-
-const CHALLENGE_DAYS = [
-  "Name three specifics you are grateful for before noon.",
-  "Send a kind note to someone who held you up this year.",
-  "Take a ten-minute walk with no podcast — just breathe.",
-  "Write down one boundary you are proud of maintaining.",
-  "Savor a meal or drink without multitasking.",
-  "List a fear you survived — evidence of your resilience.",
-  "End the day by thanking your body for what it carried.",
-];
-
-function dayIndex() {
-  const start = new Date(new Date().getFullYear(), 0, 0).getTime();
-  const diff = Date.now() - start;
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
+function localDateKey(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 export function WellnessPage() {
@@ -34,19 +17,24 @@ export function WellnessPage() {
 
   if (!user) return null;
 
+  const dateKey = localDateKey(new Date());
   const quote = useMemo(() => {
-    const i = dayIndex() % AFFIRMATIONS.length;
-    return AFFIRMATIONS[i];
-  }, []);
+    const d = new Date();
+    const year = d.getFullYear();
+    const doy = getLocalDayOfYear(d);
+    const idx = affirmationIndexForDay(year, doy, AFFIRMATIONS_365.length);
+    return AFFIRMATIONS_365[idx] ?? "";
+  }, [dateKey]);
 
-  const canChallenge = canJoinChallenges(user.tier);
+  const monthlyChallenge = useMemo(() => getMonthlyChallengeFor(new Date()), [dateKey]);
 
   return (
     <div>
       <h1 className="page-title">Affirmations &amp; challenges</h1>
       <p className="lede">
-        Gentle daily grounding and a weekly rhythm you can share with the circle — no pressure,
-        no perfection.
+        Gentle daily grounding and a monthly challenge you can share with the circle — no pressure,
+        no perfection. Affirmations reuse the same collection each year with a new order; challenges
+        rotate by calendar month and shuffle each year.
       </p>
 
       <section className="surface affirm-card" aria-labelledby="daily-heading">
@@ -55,37 +43,26 @@ export function WellnessPage() {
         </h2>
         <p className="affirm-quote">“{quote}”</p>
         <p style={{ fontSize: "0.9rem", color: "var(--color-ink-muted)", margin: 0 }}>
-          Refreshes daily — save or screenshot what speaks to you.
+          One line per local calendar day; order reshuffles each January. Save or screenshot what speaks to you.
         </p>
       </section>
 
       <section className="surface challenge-card" style={{ marginTop: "var(--space-lg)" }} aria-labelledby="challenge-heading">
         <h2 id="challenge-heading" style={{ fontSize: "1.2rem" }}>
-          7 Days of Gratitude
+          This month’s challenge: {monthlyChallenge.title}
         </h2>
-        <p>
-          A community wellness challenge: one intentional prompt each day. Inner Circle members can
-          officially join and track the week together.
-        </p>
-        {!canChallenge && (
-          <p className="tier-note">
-            <strong>Inner Circle tier</strong> unlocks joining tracked challenges. You can still
-            follow along privately anytime.
-          </p>
-        )}
-        {canChallenge && (
-          <button
-            type="button"
-            className={joined ? "btn btn-secondary" : "btn btn-primary"}
-            onClick={() => setJoined((j) => !j)}
-          >
-            {joined ? "Leave challenge" : "Join this week’s challenge"}
-          </button>
-        )}
+        <p>{monthlyChallenge.summary}</p>
+        <button
+          type="button"
+          className={joined ? "btn btn-secondary" : "btn btn-primary"}
+          onClick={() => setJoined((j) => !j)}
+        >
+          {joined ? "Leave challenge" : "Join this month’s challenge"}
+        </button>
         <ol className="challenge-days">
-          {CHALLENGE_DAYS.map((day, i) => (
-            <li key={i}>
-              <strong>Day {i + 1}.</strong> {day}
+          {monthlyChallenge.weeks.map((line, i) => (
+            <li key={`${monthlyChallenge.id}-${i}`}>
+              {line}
             </li>
           ))}
         </ol>
@@ -105,12 +82,6 @@ export function WellnessPage() {
         }
         .challenge-card {
           padding: var(--space-lg);
-        }
-        .tier-note {
-          background: var(--color-surface);
-          padding: var(--space-sm) var(--space-md);
-          border-radius: var(--radius-sm);
-          font-size: 0.95rem;
         }
         .challenge-days {
           margin: var(--space-md) 0 0;

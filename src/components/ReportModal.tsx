@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Report } from "../types";
-import { getReports, saveReports } from "../lib/storage";
+import { getReports, pushAdminNotification, saveReports } from "../lib/storage";
 import { useAuth } from "../context/AuthContext";
 
 export function ReportModal({
@@ -37,6 +37,15 @@ export function ReportModal({
       status: "open",
     };
     saveReports([r, ...getReports()]);
+    pushAdminNotification({
+      kind: "moderation_report",
+      title: "New moderation report",
+      body: `${user.displayName} reported a ${targetType}: ${reason.trim()}.`,
+      actorId: user.id,
+      actorName: user.displayName,
+      href: "/moderation",
+      relatedId: r.id,
+    });
     setDone(true);
     setTimeout(() => {
       setDone(false);

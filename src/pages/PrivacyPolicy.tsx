@@ -12,15 +12,16 @@ export function PrivacyPolicy() {
 
       <h2>1. Who we are</h2>
       <p>
-        “The My Inner Circle App,” “we,” “us,” and “our” refer to the operator of this website and related services
-        (the “Service”). Contact details appear on the <a href="/contact">Contact</a> page.
+        “My Inner Circle,” “we,” “us,” and “our” refer to the operator of this website and related services (the “Service”).
+        Contact details appear on the <a href="/contact">Contact</a> page.
       </p>
 
       <h2>2. Information we collect</h2>
       <ul>
         <li>
-          <strong>Account information:</strong> such as name, display name, email address, membership tier, profile
-          fields (for example bio and interests), and credentials you provide when you create an account.
+          <strong>Account information:</strong> such as legal/preferred names, email address, phone number, general city or
+          metro, birth date (optional birthday greetings), profile fields like bio/interests, and
+          credentials you provide when joining.
         </li>
         <li>
           <strong>Community content:</strong> posts, comments, reactions, RSVPs, reports, and similar content you

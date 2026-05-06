@@ -6,14 +6,17 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { MembershipTier, UserProfile } from "../types";
+import type { UserProfile } from "../types";
 import { ensureSeedData } from "../lib/seed";
 import {
   getSessionUserId,
   getUsers,
+  normalizeUser,
+  pushAdminNotification,
   saveUser,
   setSessionUserId,
 } from "../lib/storage";
+import { notifyServerSignup } from "../lib/apiClient";
 import { checkStoredPassword, setStoredPassword } from "../lib/passwordStore";
 import { ensurePreviewUser } from "../lib/previewUser";
 
@@ -26,7 +29,9 @@ type AuthContextValue = {
     email: string;
     password: string;
     displayName: string;
-    tier: MembershipTier;
+    phone: string;
+    address: string;
+    birthdateISO: string;
   }) => { ok: boolean; message?: string };
   logout: () => void;
   updateProfile: (patch: Partial<UserProfile>) => void;
@@ -45,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const id = getSessionUserId();
     if (!id) return null;
     const u = getUsers()[id];
-    return u ?? null;
+    return u ? normalizeUser(u) : null;
   });
 
   const refreshUser = useCallback(() => {
@@ -54,13 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       return;
     }
-    setUser(getUsers()[id] ?? null);
+    const u = getUsers()[id];
+    setUser(u ? normalizeUser(u) : null);
   }, []);
 
   const enterPreview = useCallback(() => {
     const profile = ensurePreviewUser();
     setSessionUserId(profile.id);
-    setUser(profile);
+    setUser(normalizeUser(profile));
   }, []);
 
   const login = useCallback((email: string, password: string) => {
@@ -73,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!checkStoredPassword(found.id, password))
       return { ok: false, message: "Incorrect password." };
     setSessionUserId(found.id);
-    setUser(found);
+    setUser(normalizeUser(found));
     return { ok: true };
   }, []);
 
@@ -82,7 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: string;
       password: string;
       displayName: string;
-      tier: MembershipTier;
+      phone: string;
+      address: string;
+      birthdateISO: string;
     }) => {
       const e = normalizeEmail(input.email);
       const users = getUsers();
@@ -100,19 +108,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id,
         email: e,
         displayName: input.displayName.trim(),
-        tier: input.tier,
         bio: "",
         interests: [],
         joinedCategories: [],
         isModerator: false,
+        isSiteAdmin: false,
         onboardingComplete: false,
         createdAt: new Date().toISOString(),
+        phone: input.phone.trim(),
+        city: "",
+        address: input.address.trim(),
+        birthdateISO: input.birthdateISO,
+        memberApprovalStatus: "pending",
       };
 
       saveUser(profile);
+      pushAdminNotification({
+        kind: "member_signup",
+        title: "New member application",
+        body: `${profile.displayName} signed up and needs membership approval.`,
+        actorId: profile.id,
+        actorName: profile.displayName,
+        href: "/admin",
+        relatedId: profile.id,
+      });
       setStoredPassword(id, input.password);
-      setSessionUserId(id);
-      setUser(profile);
+      void notifyServerSignup(profile);
       return { ok: true };
     },
     [],
@@ -128,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!id) return;
     const current = getUsers()[id];
     if (!current) return;
-    const next = { ...current, ...patch };
+    const next = normalizeUser({ ...current, ...patch });
     saveUser(next);
     setUser(next);
   }, []);

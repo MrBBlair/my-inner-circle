@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ForumCategoryPills } from "../components/ForumCategoryPills";
+import { ForumCategoryPills, ForumFauxSearch } from "../components/ForumCategoryPills";
 import { ReportModal } from "../components/ReportModal";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -10,10 +10,10 @@ import {
   formatRelativeTime,
 } from "../lib/forumHelpers";
 import {
-  canPost,
   CATEGORY_META,
   getComments,
   getThreads,
+  getUsers,
   saveComments,
   saveThreads,
   type ForumCategorySlug,
@@ -61,7 +61,7 @@ export function ThreadPage() {
     .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
 
   const joined = user.joinedCategories.includes(categorySlug);
-  const canComment = joined && canPost(user.tier);
+  const canComment = joined;
 
   const toggleHeart = () => {
     const threads = getThreads();
@@ -97,6 +97,23 @@ export function ThreadPage() {
 
   const live = getThreads().find((t) => t.id === thread.id) ?? thread;
   const heartedLive = live.heartUserIds.includes(user.id);
+  const usersById = getUsers();
+  const avatarFor = (authorId: string, authorName: string, small = false) => {
+    const profile = usersById[authorId];
+    const href = authorId === user.id ? "/profile" : `/members/${authorId}`;
+    return (
+      <Link to={href} className="nd-avatar-link" aria-label={`Open ${authorName}'s profile`}>
+        <span
+          className={`nd-avatar${small ? " nd-avatar--sm" : ""} ${
+            profile?.profileImageDataUrl ? "nd-avatar--photo" : avatarToneClass(authorName)
+          }`}
+          aria-hidden
+        >
+          {profile?.profileImageDataUrl ? <img src={profile.profileImageDataUrl} alt="" /> : displayInitials(authorName)}
+        </span>
+      </Link>
+    );
+  };
 
   return (
     <div className="nd-forum nd-forum--feed">
@@ -108,13 +125,11 @@ export function ThreadPage() {
         </div>
       </div>
 
-      <ForumCategoryPills />
+      <ForumCategoryPills trailing={<ForumFauxSearch />} />
 
       <article className="nd-thread-hero">
         <div className="nd-post-card__row">
-          <span className={`nd-avatar ${avatarToneClass(live.authorName)}`} aria-hidden>
-            {displayInitials(live.authorName)}
-          </span>
+          {avatarFor(live.authorId, live.authorName)}
           <div className="nd-post-card__main">
             <div className="nd-post-card__head">
               <p className="nd-post-card__author">{live.authorName}</p>
@@ -156,8 +171,7 @@ export function ThreadPage() {
         </h2>
         {!canComment && (
           <div className="nd-alert">
-            Join this space and use <strong>Bloom+</strong> to reply — we keep chats kind and
-            on-topic.
+            Join this space from the forum overview to reply — we keep chats kind and on-topic.
           </div>
         )}
         {canComment && (
@@ -227,9 +241,7 @@ export function ThreadPage() {
         <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {comments.map((c) => (
             <li key={c.id} className="nd-comment">
-              <span className={`nd-avatar nd-avatar--sm ${avatarToneClass(c.authorName)}`} aria-hidden>
-                {displayInitials(c.authorName)}
-              </span>
+              {avatarFor(c.authorId, c.authorName, true)}
               <div className="nd-comment__body">
                 <p className="nd-comment__author">{c.authorName}</p>
                 <p className="nd-comment__text">{c.body}</p>

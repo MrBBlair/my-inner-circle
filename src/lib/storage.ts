@@ -1,9 +1,14 @@
 import type {
+  AdminNotification,
   Comment,
+  CrownBlogPost,
   DirectorySpotlight,
   DonationListing,
+  EventGalleryPhoto,
   EventItem,
   ForumCategorySlug,
+  NeighborhoodGroup,
+  NeighborhoodGroupRequest,
   Report,
   Thread,
   UserProfile,
@@ -19,9 +24,14 @@ const KEYS = {
   comments: "mic_comments",
   events: "mic_events",
   reports: "mic_reports",
+  adminNotifications: "mic_admin_notifications",
   donations: "mic_donations",
   vendors: "mic_vendors",
   directorySpotlights: "mic_directory_spotlights",
+  neighborhoodGroupRequests: "mic_neighborhood_group_requests",
+  neighborhoodGroups: "mic_neighborhood_groups",
+  gallery: "mic_event_gallery",
+  adminCrownBlogs: "mic_admin_crown_blogs",
   seed: "mic_seed_v1",
 } as const;
 
@@ -39,13 +49,33 @@ function writeJSON(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+const apiBase = (): string =>
+  typeof import.meta.env.VITE_API_BASE === "string" ? import.meta.env.VITE_API_BASE : "/api";
+
+function notifyAdminServer(note: AdminNotification) {
+  try {
+    void fetch(`${apiBase()}/admin/notifications`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(note),
+    });
+  } catch {
+    /* Offline or API down — local admin inbox still works. */
+  }
+}
+
 export function getUsers(): Record<string, UserProfile> {
-  return readJSON(KEYS.users, {});
+  const raw = readJSON<Record<string, UserProfile & { tier?: unknown }>>(KEYS.users, {});
+  const out: Record<string, UserProfile> = {};
+  for (const id of Object.keys(raw)) {
+    out[id] = normalizeUser(raw[id]);
+  }
+  return out;
 }
 
 export function saveUser(profile: UserProfile) {
   const all = getUsers();
-  all[profile.id] = profile;
+  all[profile.id] = normalizeUser(profile);
   writeJSON(KEYS.users, all);
 }
 
@@ -89,6 +119,65 @@ export function saveReports(reports: Report[]) {
   writeJSON(KEYS.reports, reports);
 }
 
+function isAdminNotificationRecord(x: unknown): x is AdminNotification {
+  if (!x || typeof x !== "object") return false;
+  const o = x as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.kind === "string" &&
+    typeof o.title === "string" &&
+    typeof o.body === "string" &&
+    typeof o.createdAt === "string" &&
+    (o.readAt === undefined || typeof o.readAt === "string") &&
+    (o.actorId === undefined || typeof o.actorId === "string") &&
+    (o.actorName === undefined || typeof o.actorName === "string") &&
+    (o.href === undefined || typeof o.href === "string") &&
+    (o.relatedId === undefined || typeof o.relatedId === "string")
+  );
+}
+
+export function getAdminNotifications(): AdminNotification[] {
+  const raw = readJSON<unknown>(KEYS.adminNotifications, []);
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(isAdminNotificationRecord).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+
+export function saveAdminNotifications(list: AdminNotification[]) {
+  writeJSON(KEYS.adminNotifications, list.slice(0, 100));
+  window.dispatchEvent(new Event("mic_admin_notifications_changed"));
+}
+
+export function pushAdminNotification(input: Omit<AdminNotification, "id" | "createdAt"> & { id?: string; createdAt?: string }) {
+  const note: AdminNotification = {
+    id: input.id ?? crypto.randomUUID?.() ?? `admin_note_${Date.now()}`,
+    createdAt: input.createdAt ?? new Date().toISOString(),
+    kind: input.kind,
+    title: input.title,
+    body: input.body,
+    readAt: input.readAt,
+    actorId: input.actorId,
+    actorName: input.actorName,
+    href: input.href,
+    relatedId: input.relatedId,
+  };
+  saveAdminNotifications([note, ...getAdminNotifications()]);
+  notifyAdminServer(note);
+}
+
+export function markAdminNotificationRead(id: string) {
+  const readAt = new Date().toISOString();
+  saveAdminNotifications(getAdminNotifications().map((n) => (n.id === id ? { ...n, readAt } : n)));
+}
+
+export function markAllAdminNotificationsRead() {
+  const readAt = new Date().toISOString();
+  saveAdminNotifications(getAdminNotifications().map((n) => (n.readAt ? n : { ...n, readAt })));
+}
+
+export function getUnreadAdminNotificationCount(): number {
+  return getAdminNotifications().filter((n) => !n.readAt).length;
+}
+
 export function getDonations(): DonationListing[] {
   return readJSON(KEYS.donations, []);
 }
@@ -113,38 +202,97 @@ export function saveDirectorySpotlights(list: DirectorySpotlight[]) {
   writeJSON(KEYS.directorySpotlights, list);
 }
 
+export function normalizeUser(profile: UserProfile & { tier?: unknown }): UserProfile {
+  const { tier: _omitTier, ...rest } = profile;
+  const approval: UserProfile["memberApprovalStatus"] =
+    rest.memberApprovalStatus === "pending" || rest.memberApprovalStatus === "declined"
+      ? rest.memberApprovalStatus
+      : "approved";
+
+  return {
+    ...rest,
+    isSiteAdmin: rest.isSiteAdmin === true,
+    statusLine: rest.statusLine ?? "",
+    phone: rest.phone ?? "",
+    city: rest.city ?? "",
+    address: rest.address ?? "",
+    profileImageDataUrl: rest.profileImageDataUrl ?? "",
+    backgroundImageDataUrl: rest.backgroundImageDataUrl ?? "",
+    birthdateISO: rest.birthdateISO ?? "",
+    memberApprovalStatus: approval,
+  };
+}
+
+/** Full app, directory, and onboarding (for non–site-admin accounts). */
+export function hasApprovedMembership(profile: UserProfile): boolean {
+  if (profile.isSiteAdmin === true) return true;
+  return profile.memberApprovalStatus === "approved";
+}
+
+export function getNeighborhoodGroupRequests(): NeighborhoodGroupRequest[] {
+  return readJSON(KEYS.neighborhoodGroupRequests, []);
+}
+
+export function saveNeighborhoodGroupRequests(list: NeighborhoodGroupRequest[]) {
+  writeJSON(KEYS.neighborhoodGroupRequests, list);
+}
+
+export function getNeighborhoodGroups(): NeighborhoodGroup[] {
+  return readJSON(KEYS.neighborhoodGroups, []);
+}
+
+export function saveNeighborhoodGroups(list: NeighborhoodGroup[]) {
+  writeJSON(KEYS.neighborhoodGroups, list);
+}
+
+export function getEventGalleryPhotos(): EventGalleryPhoto[] {
+  return readJSON(KEYS.gallery, []);
+}
+
+export function saveEventGalleryPhotos(list: EventGalleryPhoto[]) {
+  writeJSON(KEYS.gallery, list);
+}
+
+function isCrownBlogPostRecord(x: unknown): x is CrownBlogPost {
+  if (!x || typeof x !== "object") return false;
+  const o = x as Record<string, unknown>;
+  return (
+    typeof o.slug === "string" &&
+    typeof o.id === "string" &&
+    typeof o.releaseDateISO === "string" &&
+    typeof o.dateISO === "string" &&
+    typeof o.dateLabel === "string" &&
+    typeof o.category === "string" &&
+    typeof o.title === "string" &&
+    typeof o.excerpt === "string" &&
+    typeof o.readMins === "number" &&
+    typeof o.src === "string" &&
+    typeof o.alt === "string" &&
+    Array.isArray(o.paragraphs) &&
+    o.paragraphs.every((p) => typeof p === "string") &&
+    (o.tips === undefined ||
+      (Array.isArray(o.tips) && o.tips.every((t) => typeof t === "string"))) &&
+    (o.photoFocus === undefined || o.photoFocus === "lower")
+  );
+}
+
+/** Site-admin-authored blog posts (localStorage). */
+export function getAdminCrownBlogPosts(): CrownBlogPost[] {
+  const raw = readJSON<unknown>(KEYS.adminCrownBlogs, []);
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(isCrownBlogPostRecord);
+}
+
+export function saveAdminCrownBlogPosts(posts: CrownBlogPost[]) {
+  writeJSON(KEYS.adminCrownBlogs, posts);
+}
+
 export function isSeeded(): boolean {
   return localStorage.getItem(KEYS.seed) === "1";
 }
 
 export function markSeeded() {
   localStorage.setItem(KEYS.seed, "1");
-}
-
-export const TIER_LABELS: Record<
-  UserProfile["tier"],
-  { label: string; blurb: string }
-> = {
-  seedling: {
-    label: "Seedling",
-    blurb: "Forum read-only, affirmations, and public events.",
-  },
-  bloom: {
-    label: "Bloom",
-    blurb: "Post in joined categories, RSVP, and resource library.",
-  },
-  inner_circle: {
-    label: "Inner Circle",
-    blurb: "Full community access, challenges, and priority updates.",
-  },
-};
-
-export function canPost(tier: UserProfile["tier"]): boolean {
-  return tier === "bloom" || tier === "inner_circle";
-}
-
-export function canJoinChallenges(tier: UserProfile["tier"]): boolean {
-  return tier === "inner_circle";
 }
 
 export const CATEGORY_META: Record<

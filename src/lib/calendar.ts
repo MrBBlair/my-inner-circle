@@ -1,3 +1,5 @@
+import { CALENDAR_PRODUCT_ID } from "./constants";
+
 /** Minimal iCalendar (.ics) generation for “Add to calendar”. */
 export function buildICS(opts: {
   title: string;
@@ -19,7 +21,7 @@ export function buildICS(opts: {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//The My Inner Circle App//EN",
+    `PRODID:${CALENDAR_PRODUCT_ID}`,
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",

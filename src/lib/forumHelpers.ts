@@ -1,6 +1,19 @@
 import type { ForumCategorySlug } from "../types";
 import { getComments } from "./storage";
 
+/** URL-safe slug for neighborhood circle requests */
+export function slugifyForumSlug(raw: string): string {
+  const s = raw
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+  return s.length > 0 ? s : "circle";
+}
+
 export const CATEGORY_SHORT_LABEL: Record<ForumCategorySlug, string> = {
   health: "Health",
   career: "Career",
@@ -10,11 +23,11 @@ export const CATEGORY_SHORT_LABEL: Record<ForumCategorySlug, string> = {
 };
 
 export const HUB_BANNER: Record<ForumCategorySlug, string> = {
-  health: "linear-gradient(125deg, #4a7c78 0%, #5a9a94 45%, #7d6b93 100%)",
-  career: "linear-gradient(125deg, #7d6b93 0%, #9b87b3 50%, #4a7c78 100%)",
-  healing: "linear-gradient(125deg, #e8b4b8 0%, #c98a8f 40%, #7d6b93 100%)",
-  parenting: "linear-gradient(125deg, #c5ddd9 0%, #4a7c78 55%, #3a635f 100%)",
-  community: "linear-gradient(125deg, #dcd4e8 0%, #7d6b93 45%, #e8b4b8 100%)",
+  health: "linear-gradient(125deg, #6b3fa0 0%, #892456 48%, #5c1538 100%)",
+  career: "linear-gradient(125deg, #b4233d 0%, #892456 50%, #6b3fa0 100%)",
+  healing: "linear-gradient(125deg, #ea8f80 0%, #892456 42%, #6b3fa0 100%)",
+  parenting: "linear-gradient(125deg, #f5d9e9 0%, #ea8f80 50%, #892456 100%)",
+  community: "linear-gradient(125deg, #ebe0f7 0%, #892456 42%, #ea8f80 92%)",
 };
 
 export function avatarToneClass(name: string): string {

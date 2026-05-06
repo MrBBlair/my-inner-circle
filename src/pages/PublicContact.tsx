@@ -1,10 +1,22 @@
 import { useState } from "react";
+import { pushAdminNotification } from "../lib/storage";
 
 export function PublicContact() {
   const [sent, setSent] = useState(false);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
+    const name = String(fd.get("name") || "").trim();
+    const email = String(fd.get("email") || "").trim();
+    const message = String(fd.get("message") || "").trim();
+    pushAdminNotification({
+      kind: "public_contact",
+      title: "New public contact message",
+      body: `${name || "A visitor"} (${email || "no email"}) sent: ${message.slice(0, 140)}`,
+      actorName: name || undefined,
+      href: "/contact",
+    });
     setSent(true);
     setTimeout(() => setSent(false), 5000);
   };
@@ -32,19 +44,19 @@ export function PublicContact() {
           <label className="label" htmlFor="pub-name">
             Name
           </label>
-          <input id="pub-name" className="input" required autoComplete="name" />
+          <input id="pub-name" name="name" className="input" required autoComplete="name" />
         </div>
         <div className="field">
           <label className="label" htmlFor="pub-email">
             Email
           </label>
-          <input id="pub-email" className="input" type="email" required autoComplete="email" />
+          <input id="pub-email" name="email" className="input" type="email" required autoComplete="email" />
         </div>
         <div className="field">
           <label className="label" htmlFor="pub-msg">
             Message
           </label>
-          <textarea id="pub-msg" className="textarea" required rows={5} />
+          <textarea id="pub-msg" name="message" className="textarea" required rows={5} />
         </div>
         <button type="submit" className="btn btn-primary">
           Send

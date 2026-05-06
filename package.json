@@ -2,23 +2,30 @@
   "name": "my-inner-circle",
   "private": true,
   "version": "1.0.0",
-  "description": "The My Inner Circle App — community, events, and wellness (Vite + React)",
+  "description": "My Inner Circle — community, friendship, events, and wellness (Vite + React)",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run api\" \"npm run vite\" --names api,vite --prefix-colors blue,green",
+    "vite": "vite",
+    "api": "node server/index.mjs",
     "build": "tsc -b && vite build",
+    "gen:blog": "node scripts/generate-crown-blog.mjs",
     "preview": "vite preview",
     "pushit": "bash scripts/pushit.sh"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-qr-code": "^2.0.21",
     "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.2.1",
     "typescript": "~5.6.2",
     "vite": "^5.4.10"
   }

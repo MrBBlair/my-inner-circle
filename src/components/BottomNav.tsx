@@ -14,7 +14,7 @@ export function BottomNav() {
         <span className="bottom-nav__icon" aria-hidden>
           ◎
         </span>
-        Home
+        My Circle
       </NavLink>
       <NavLink to="/forum" className={item}>
         <span className="bottom-nav__icon" aria-hidden>
@@ -58,7 +58,7 @@ export function BottomNav() {
           align-items: center;
           gap: 0.15rem;
           padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom));
-          background: rgba(255, 255, 255, 0.94);
+          background: rgba(252, 234, 242, 0.96);
           backdrop-filter: blur(12px);
           border-top: 1px solid var(--color-border);
           box-shadow: 0 -6px 24px rgba(45, 42, 50, 0.06);

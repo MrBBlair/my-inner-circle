@@ -2,20 +2,19 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../context/AuthContext";
-import type { MembershipTier } from "../types";
-import { TIER_LABELS } from "../lib/storage";
-
-const TIERS: MembershipTier[] = ["seedling", "bloom", "inner_circle"];
-
+import { hasApprovedMembership } from "../lib/storage";
 export function Signup() {
   const { user, signup, enterPreview } = useAuth();
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [tier, setTier] = useState<MembershipTier>("bloom");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [birthdateISO, setBirthdateISO] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  if (user && !hasApprovedMembership(user)) return <Navigate to="/account-status" replace />;
   if (user?.onboardingComplete) return <Navigate to="/app" replace />;
   if (user && !user.onboardingComplete) return <Navigate to="/onboarding" replace />;
 
@@ -26,21 +25,24 @@ export function Signup() {
       email,
       password,
       displayName,
-      tier,
+      phone,
+      address,
+      birthdateISO,
     });
     if (!res.ok) setError(res.message ?? "Could not create account.");
+    else nav("/signup/thanks", { replace: true });
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card surface">
-        <Link to="/" className="auth-brand" aria-label="The My Inner Circle App — home">
+        <Link to="/" className="auth-brand" aria-label="My Inner Circle — home">
           <BrandLogo variant="full" size="sm" />
         </Link>
         <h1>Join the Circle</h1>
         <p className="lede">
-          Create your account, then we’ll set up your profile — interests, bio, and the rooms you
-          want to be part of.
+          Membership is free. Tell us how to reach you — a site administrator will review new applications before you
+          can use the full community. After approval, sign in to finish your profile.
         </p>
         <p className="auth-legal">
           By creating an account you agree to our{" "}
@@ -61,7 +63,7 @@ export function Signup() {
         <form onSubmit={onSubmit}>
           <div className="field">
             <label className="label" htmlFor="displayName">
-              Display name
+              Full name
             </label>
             <input
               id="displayName"
@@ -87,6 +89,51 @@ export function Signup() {
             />
           </div>
           <div className="field">
+            <label className="label" htmlFor="phone">
+              Phone number
+            </label>
+            <input
+              id="phone"
+              className="input"
+              type="tel"
+              autoComplete="tel"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label className="label" htmlFor="address">
+              Address
+            </label>
+            <textarea
+              id="address"
+              className="textarea"
+              rows={3}
+              required
+              autoComplete="street-address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Street, city, state, ZIP — as you would share for the member directory"
+            />
+          </div>
+          <div className="field">
+            <label className="label" htmlFor="birthdate">
+              Birthday
+            </label>
+            <input
+              id="birthdate"
+              className="input"
+              type="date"
+              required
+              value={birthdateISO}
+              onChange={(e) => setBirthdateISO(e.target.value)}
+            />
+            <p className="field-hint">
+              Helps us personalize celebrations. Stored with your account inside this demo.
+            </p>
+          </div>
+          <div className="field">
             <label className="label" htmlFor="password">
               Password
             </label>
@@ -102,27 +149,9 @@ export function Signup() {
             />
             <p className="field-hint">At least 8 characters. Stored locally in this demo only.</p>
           </div>
-          <fieldset className="tier-fieldset">
-            <legend className="label">Membership tier</legend>
-            {TIERS.map((t) => (
-              <label key={t} className="tier-option">
-                <input
-                  type="radio"
-                  name="tier"
-                  value={t}
-                  checked={tier === t}
-                  onChange={() => setTier(t)}
-                />
-                <span>
-                  <strong>{TIER_LABELS[t].label}</strong>
-                  <span className="tier-blurb">{TIER_LABELS[t].blurb}</span>
-                </span>
-              </label>
-            ))}
-          </fieldset>
           {error && <p role="alert" className="auth-error">{error}</p>}
           <button type="submit" className="btn btn-primary auth-submit">
-            Continue to profile setup
+            Submit application
           </button>
         </form>
         <p className="auth-switch">
@@ -171,29 +200,6 @@ export function Signup() {
           font-size: 0.82rem;
           color: var(--color-ink-muted);
           margin: 0.25rem 0 0;
-        }
-        .tier-fieldset {
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-sm) var(--space-md);
-          margin: 0 0 var(--space-md);
-        }
-        .tier-option {
-          display: flex;
-          gap: var(--space-sm);
-          align-items: flex-start;
-          margin-bottom: var(--space-sm);
-          cursor: pointer;
-          font-size: 0.92rem;
-        }
-        .tier-option:last-child {
-          margin-bottom: 0;
-        }
-        .tier-blurb {
-          display: block;
-          color: var(--color-ink-muted);
-          font-weight: 400;
-          margin-top: 0.15rem;
         }
         .auth-submit {
           width: 100%;

@@ -1,28 +1,38 @@
 import { Link } from "react-router-dom";
 import { BrandLogo } from "./BrandLogo";
+import { useAuth } from "../context/AuthContext";
 
 const year = new Date().getFullYear();
 
 /** Compact legal links inside the signed-in app shell (above bottom nav on mobile). */
 export function LegalStrip() {
+  const { user } = useAuth();
+  const inApp = Boolean(user?.onboardingComplete);
+
   return (
     <footer className="legal-strip">
       <div className="legal-strip__inner">
         <Link
-          to="/"
+          to={inApp ? "/app" : "/"}
           className="legal-strip__logo"
-          aria-label="The My Inner Circle App — welcome page"
+          aria-label={inApp ? "My Inner Circle — home feed" : "My Inner Circle — welcome page"}
         >
           <BrandLogo variant="mark" size="sm" />
         </Link>
         <nav className="legal-strip__links" aria-label="Legal">
+          {inApp ? (
+            <>
+              <Link to="/app">My Circle</Link>
+              <span aria-hidden>·</span>
+            </>
+          ) : null}
           <Link to="/privacy">Privacy</Link>
           <span aria-hidden>·</span>
           <Link to="/terms">Terms</Link>
           <span aria-hidden>·</span>
           <Link to="/guidelines">Guidelines</Link>
         </nav>
-        <span className="legal-strip__copy">© {year} The My Inner Circle App</span>
+        <span className="legal-strip__copy">© {year} My Inner Circle</span>
       </div>
       <style>{`
         .legal-strip {

@@ -1,25 +1,33 @@
+/* Palette aligned with myinnercircleinc.org homepage: pale pink grounds, magenta/burgundy primaries,
+   coral/s salmon accents, deep crimson, purple hero accents, white/neutral typography. */
 :root {
-  --color-bg: #fdf8f6;
-  --color-bg-elevated: #ffffff;
-  --color-surface: #f6f0ed;
-  --color-teal: #4a7c78;
-  --color-teal-dark: #3a635f;
-  --color-teal-soft: #c5ddd9;
-  --color-blush: #e8b4b8;
-  --color-blush-deep: #c98a8f;
-  --color-purple: #7d6b93;
-  --color-purple-soft: #dcd4e8;
-  --color-ink: #2d2a32;
-  --color-ink-muted: #5c5663;
-  --color-border: #e3dcd8;
-  --color-success: #3d6b5c;
-  --color-warning: #8a6238;
+  --color-bg: #fceaf2;
+  --color-bg-elevated: #fff9fb;
+  --color-surface: #f4dce8;
+  /* Primary CTAs (“Take a pledge”) — semantic name remains --color-teal for compatibility */
+  --color-teal: #892456;
+  --color-teal-dark: #5c1538;
+  --color-teal-soft: #f5d9e9;
+  /* Coral (“Get involved”) */
+  --color-blush: #ea8f80;
+  --color-blush-deep: #8f3832;
+  /* Crimson / highlight (“See our impact”), secondary accents */
+  --color-gold: #b4233d;
+  --color-gold-soft: #fcd4dc;
+  /* Purple hero glow */
+  --color-purple: #6b3fa0;
+  --color-purple-soft: #ebe0f7;
+  --color-ink: #291720;
+  --color-ink-muted: #6b4f59;
+  --color-border: #e8cadb;
+  --color-success: #4a7358;
+  --color-warning: #a85c32;
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 22px;
-  --shadow-soft: 0 8px 30px rgba(45, 42, 50, 0.08);
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --shadow-soft: 0 8px 30px rgba(92, 21, 56, 0.1);
+  --font-display: "Libre Baskerville", Georgia, serif;
+  --font-body: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --space-xs: 0.35rem;
   --space-sm: 0.65rem;
   --space-md: 1rem;
@@ -29,7 +37,7 @@
   --header-h: 5rem;
   --bottom-nav-h: 4.5rem;
   /* Shared marketing + app header chrome (mobile should match) */
-  --header-bar-bg: rgba(253, 248, 246, 0.94);
+  --header-bar-bg: rgba(252, 234, 242, 0.94);
   --header-bar-blur: 12px;
   --header-inner-pad-y: max(0.45rem, env(safe-area-inset-top, 0px));
   --header-inner-pad-y-bottom: 0.45rem;
@@ -56,11 +64,14 @@ body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.55;
+  font-weight: 400;
+  letter-spacing: 0.003em;
   color: var(--color-ink);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 #root {
@@ -71,6 +82,18 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(ellipse 90% 45% at 100% 0%, rgba(235, 224, 247, 0.28), transparent),
+    radial-gradient(ellipse 70% 35% at 0% 100%, rgba(107, 63, 160, 0.08), transparent),
+    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(234, 143, 128, 0.07), transparent),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 14px,
+      rgba(232, 202, 219, 0.2) 14px,
+      rgba(232, 202, 219, 0.2) 15px
+    );
 }
 
 .marketing-shell__content {
@@ -163,7 +186,7 @@ body {
 }
 
 .legal-page__ok {
-  background: rgba(197, 221, 217, 0.45);
+  background: rgba(235, 224, 247, 0.65);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -179,7 +202,8 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   line-height: 1.2;
   color: var(--color-ink);
   margin: 0 0 var(--space-sm);
@@ -292,6 +316,18 @@ img {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(ellipse 80% 40% at 100% 0%, rgba(235, 224, 247, 0.22), transparent),
+    radial-gradient(ellipse 60% 30% at 0% 100%, rgba(107, 63, 160, 0.07), transparent),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 14px,
+      rgba(232, 202, 219, 0.16) 14px,
+      rgba(232, 202, 219, 0.16) 15px
+    );
+  background-attachment: fixed;
 }
 
 .app-main {
@@ -346,11 +382,11 @@ img {
 .btn-primary {
   background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
   color: #fff;
-  box-shadow: 0 4px 16px rgba(74, 124, 120, 0.35);
+  box-shadow: 0 4px 16px rgba(92, 21, 56, 0.38);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 22px rgba(74, 124, 120, 0.45);
+  box-shadow: 0 6px 22px rgba(92, 21, 56, 0.48);
 }
 
 .btn-secondary {
@@ -371,7 +407,7 @@ img {
 }
 
 .btn-heart[data-active="true"] {
-  background: rgba(232, 180, 184, 0.35);
+  background: rgba(234, 143, 128, 0.28);
   border-color: var(--color-blush);
 }
 
@@ -464,4 +500,28 @@ img {
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
+}
+
+/* Support library guides: hide chrome when printing from an article (Save as PDF, etc.) */
+@media print {
+  body.print-support-guide .app-header,
+  body.print-support-guide .bottom-nav,
+  body.print-support-guide .legal-strip,
+  body.print-support-guide .sidebar,
+  body.print-support-guide .no-print {
+    display: none !important;
+  }
+  body.print-support-guide .app-main {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  body.print-support-guide .app-main > div {
+    max-width: 100% !important;
+  }
+  body.print-support-guide .resource-article__body {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
 }

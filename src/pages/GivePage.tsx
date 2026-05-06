@@ -1,12 +1,16 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { QrInline } from "../components/QrInline";
 import { useAuth } from "../context/AuthContext";
-import { canPost, getDonations, saveDonations } from "../lib/storage";
+import { getMonetaryGivingUrl, PUBLIC_WEBSITE_URL } from "../lib/constants";
+import { getDonations, pushAdminNotification, saveDonations } from "../lib/storage";
 import type { DonationKind } from "../types";
+
+type GiveTab = DonationKind | "fund";
 
 export function GivePage() {
   const { user } = useAuth();
-  const [tab, setTab] = useState<DonationKind>("clothes");
+  const [tab, setTab] = useState<GiveTab>("clothes");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [logistics, setLogistics] = useState("");
@@ -14,9 +18,10 @@ export function GivePage() {
 
   if (!user) return null;
 
-  const allowList = canPost(user.tier);
+  const monetaryUrl = getMonetaryGivingUrl();
 
   const list = useMemo(() => {
+    if (tab === "fund") return [];
     return getDonations()
       .filter((d) => d.kind === tab)
       .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
@@ -24,7 +29,8 @@ export function GivePage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!allowList || !title.trim() || !description.trim() || !logistics.trim()) return;
+    if (tab === "fund") return;
+    if (!title.trim() || !description.trim() || !logistics.trim()) return;
     const item = {
       id: crypto.randomUUID?.() ?? `don_${Date.now()}`,
       kind: tab,
@@ -36,6 +42,15 @@ export function GivePage() {
       createdAt: new Date().toISOString(),
     };
     saveDonations([item, ...getDonations()]);
+    pushAdminNotification({
+      kind: "member_listing",
+      title: `New ${tab === "clothes" ? "item" : "service"} listing`,
+      body: `${user.displayName} posted "${item.title}" in Give & receive.`,
+      actorId: user.id,
+      actorName: user.displayName,
+      href: "/give",
+      relatedId: item.id,
+    });
     setTitle("");
     setDescription("");
     setLogistics("");
@@ -46,11 +61,11 @@ export function GivePage() {
     <div>
       <h1 className="page-title">Give &amp; receive</h1>
       <p className="lede">
-        Offer gently used clothes and essentials, or neighborly services (skills, swaps, sliding-scale
-        help). Always meet safely; Inner Circle doesn’t handle shipping or payments in this demo.
+        Offer gently used clothes, neighborly services, or support the nonprofit treasury through Zeffy — every gift keeps
+        the circle hospitable across ages and ZIP codes.
       </p>
 
-      <div className="circle-tabs" role="tablist" aria-label="Donation type">
+      <div className="circle-tabs" role="tablist" aria-label="Give channels">
         <button
           type="button"
           role="tab"
@@ -69,16 +84,38 @@ export function GivePage() {
         >
           Services &amp; skills
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "fund"}
+          className={"circle-tab" + (tab === "fund" ? " circle-tab--on" : "")}
+          onClick={() => setTab("fund")}
+        >
+          Monetary (Zeffy)
+        </button>
       </div>
 
-      {!allowList && (
-        <div className="surface" style={{ padding: "var(--space-md)", marginBottom: "var(--space-md)" }}>
-          <strong>Seedling tier:</strong> you can browse offers. Upgrade to <strong>Bloom</strong> or{" "}
-          <strong>Inner Circle</strong> to post donations or services.
-        </div>
+      {tab === "fund" && (
+        <section className="surface" style={{ padding: "var(--space-lg)", marginBottom: "var(--space-lg)" }}>
+          <h2 className="h-section">Give monetarily via Zeffy</h2>
+          <p>
+            Zeffy keeps fees low for nonprofits. Drop your nonprofit campaign URL into{" "}
+            <code>VITE_ZEFFY_URL</code> for the primary button destination.
+          </p>
+          <p style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "var(--space-md)" }}>
+            <a className="btn btn-primary" href={monetaryUrl} target="_blank" rel="noreferrer">
+              Open Zeffy campaign
+            </a>
+          </p>
+          <p style={{ fontSize: "0.92rem", color: "var(--color-ink-muted)", marginTop: "var(--space-md)" }}>
+            Need the public marketing site fast? Grab the QR below for{" "}
+            <a href={PUBLIC_WEBSITE_URL}>myinnercircleinc.org</a>.
+          </p>
+          <QrInline value={PUBLIC_WEBSITE_URL} caption="Marketing site QR" />
+        </section>
       )}
 
-      {allowList && (
+      {tab !== "fund" && (
         <section className="surface" style={{ padding: "var(--space-md)", marginBottom: "var(--space-lg)" }}>
           <h2 className="h-section">List something</h2>
           <form onSubmit={submit}>
@@ -99,13 +136,7 @@ export function GivePage() {
               <label className="label" htmlFor="give-desc">
                 Description
               </label>
-              <textarea
-                id="give-desc"
-                className="textarea"
-                required
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <textarea id="give-desc" className="textarea" required value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
             <div className="field">
               <label className="label" htmlFor="give-log">
@@ -127,32 +158,34 @@ export function GivePage() {
         </section>
       )}
 
-      <section aria-label="Listings">
-        <h2 className="h-section">Open listings</h2>
-        <div className="card-list">
-          {list.length === 0 ? (
-            <div className="empty-state">Nothing listed here yet — be the first to share.</div>
-          ) : (
-            list.map((d) => (
-              <article key={d.id} className="surface" style={{ padding: "var(--space-md)" }}>
-                <span className="tag tag-teal">{d.kind === "clothes" ? "Items" : "Service"}</span>
-                <h3 style={{ margin: "0.5rem 0 0.35rem", fontSize: "1.1rem" }}>{d.title}</h3>
-                <p style={{ margin: "0 0 0.5rem", color: "var(--color-ink-muted)" }}>{d.description}</p>
-                <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem" }}>
-                  <strong>Logistics:</strong> {d.logistics}
-                </p>
-                <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--color-ink-muted)" }}>
-                  {d.authorName} · {new Date(d.createdAt).toLocaleDateString()}
-                </p>
-              </article>
-            ))
-          )}
-        </div>
-      </section>
+      {tab !== "fund" && (
+        <section aria-label="Listings">
+          <h2 className="h-section">Open listings</h2>
+          <div className="card-list">
+            {list.length === 0 ? (
+              <div className="empty-state">Nothing listed here yet — be the first to share.</div>
+            ) : (
+              list.map((d) => (
+                <article key={d.id} className="surface" style={{ padding: "var(--space-md)" }}>
+                  <span className="tag tag-teal">{d.kind === "clothes" ? "Items" : "Service"}</span>
+                  <h3 style={{ margin: "0.5rem 0 0.35rem", fontSize: "1.1rem" }}>{d.title}</h3>
+                  <p style={{ margin: "0 0 0.5rem", color: "var(--color-ink-muted)" }}>{d.description}</p>
+                  <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem" }}>
+                    <strong>Logistics:</strong> {d.logistics}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--color-ink-muted)" }}>
+                    {d.authorName} · {new Date(d.createdAt).toLocaleDateString()}
+                  </p>
+                </article>
+              ))
+            )}
+          </div>
+        </section>
+      )}
 
       <p style={{ fontSize: "0.88rem", color: "var(--color-ink-muted)", marginTop: "var(--space-lg)" }}>
-        Safety tip: meet in public places for exchanges; verify identity in the neighborhood forum when
-        unsure. Report scams via <Link to="/support">Support</Link>.
+        Safety tip: meet in public places for exchanges; verify identity in the neighborhood forum when unsure. Report scams
+        via <Link to="/support">Support</Link>.
       </p>
 
       <style>{`

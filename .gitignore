@@ -4,3 +4,6 @@ dist
 *.local
 tsconfig.tsbuildinfo
 .vercel
+
+# Local API registry from dev server — may contain demo PII
+server/data/

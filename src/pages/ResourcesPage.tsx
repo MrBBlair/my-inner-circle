@@ -1,50 +1,19 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { SUPPORT_LIBRARY_INDEX } from "../content/supportLibrary";
 import { DEFAULT_ANNOUNCEMENTS } from "../lib/seed";
-import type { ResourceDoc } from "../types";
-
-const LIBRARY: ResourceDoc[] = [
-  {
-    id: "r1",
-    title: "Circle safety & privacy basics",
-    description: "How we handle reports, DMs policy, and what stays in the room.",
-    type: "pdf",
-    url: "#",
-  },
-  {
-    id: "r2",
-    title: "Consent-forward sharing worksheet",
-    description: "Prompts for posting vulnerably while protecting your story.",
-    type: "pdf",
-    url: "#",
-  },
-  {
-    id: "r3",
-    title: "Negotiation phrases that feel grounded",
-    description: "Short scripts for career conversations — Bloom+ resource.",
-    type: "pdf",
-    url: "#",
-  },
-  {
-    id: "r4",
-    title: "Partner toolkit: crisis language",
-    description: "Inner Circle: language for asking for help and supporting others.",
-    type: "link",
-    url: "https://www.samhsa.gov/find-help",
-  },
-];
 
 export function ResourcesPage() {
   const { user } = useAuth();
   if (!user) return null;
 
-  const tierOk = user.tier === "bloom" || user.tier === "inner_circle";
-
   return (
     <div>
       <h1 className="page-title">Resources &amp; announcements</h1>
       <p className="lede">
-        Curated PDFs and links from the Inner Circle team. Bloom and Inner Circle tiers unlock the
-        full library; announcements stay visible in the desktop sidebar too.
+        Guides you read here on the site, plus trusted external links. Use{" "}
+        <strong>Print / save as PDF</strong> on any guide if you want a copy. Announcements stay visible in the
+        desktop sidebar too.
       </p>
 
       <section aria-labelledby="library-heading">
@@ -52,23 +21,18 @@ export function ResourcesPage() {
           Support library
         </h2>
         <div className="card-list">
-          {LIBRARY.map((doc, index) => {
-            const locked = index >= 2 && !tierOk;
+          {SUPPORT_LIBRARY_INDEX.map((doc) => {
             return (
               <article key={doc.id} className="surface" style={{ padding: "var(--space-md)" }}>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
                   <h3 style={{ margin: 0, flex: "1 1 200px" }}>{doc.title}</h3>
-                  <span className="tag tag-teal">{doc.type === "pdf" ? "PDF" : "Link"}</span>
+                  <span className="tag tag-teal">{doc.type === "guide" ? "Guide" : "External link"}</span>
                 </div>
                 <p style={{ color: "var(--color-ink-muted)" }}>{doc.description}</p>
-                {locked ? (
-                  <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--color-purple)" }}>
-                    Included with Bloom or Inner Circle — upgrade your tier to open this item.
-                  </p>
-                ) : doc.type === "pdf" ? (
-                  <a className="btn btn-secondary" href={doc.url} onClick={(e) => e.preventDefault()}>
-                    View PDF (demo)
-                  </a>
+                {doc.type === "guide" && doc.slug ? (
+                  <Link className="btn btn-primary" to={`/resources/${doc.slug}`}>
+                    Open guide
+                  </Link>
                 ) : (
                   <a className="btn btn-primary" href={doc.url} target="_blank" rel="noreferrer">
                     Open resource

@@ -16,7 +16,7 @@ const cards = [
   {
     to: "/vendors",
     title: "Vendor space",
-    desc: "Black-owned and aligned businesses trusted by the circle.",
+    desc: "Women-led and allied businesses Circle partners uplift here.",
     icon: "🛍",
   },
   {
@@ -51,7 +51,7 @@ export function CommunityHubPage() {
         {" · "}
         <Link to="/support">Support</Link>
         {" · "}
-        <Link to="/app">Home feed</Link>
+        <Link to="/app">My Circle</Link>
       </p>
       <style>{`
         .hub-grid {

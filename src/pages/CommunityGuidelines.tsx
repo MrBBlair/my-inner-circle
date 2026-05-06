@@ -3,8 +3,11 @@ export function CommunityGuidelines() {
     <article className="legal-page surface">
       <h1>Community guidelines</h1>
       <p className="legal-page__updated">
-        Our circle stays safe when we lead with care. These rules support every member — especially African American
-        women and others seeking a purposeful, respectful space.
+        Our circle stays safe when we lead with care. These rules welcome women of every age, ethnicity, sexuality,
+        culture, spirituality, caregiver status, and lived experience gathering for friendship-forward support.
+      </p>
+      <p className="legal-page__ok">
+        Adopted by My Inner Circle and effective immediately for all community spaces.
       </p>
 
       <h2>1. Be kind and human</h2>
@@ -57,9 +60,6 @@ export function CommunityGuidelines() {
         appeals.
       </p>
 
-      <p className="legal-page__notice" style={{ marginTop: "var(--space-lg)" }}>
-        These guidelines are a template for this demo. Adapt them with your moderation team before public launch.
-      </p>
     </article>
   );
 }
