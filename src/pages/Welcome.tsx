@@ -364,6 +364,18 @@ export function Welcome() {
         .welcome__trust li:last-child {
           margin-bottom: 0;
         }
+        @media (max-width: 767px) {
+          .welcome__hero--official {
+            background-size: contain;
+            background-position: center top;
+            background-color: #1a0a0a;
+            min-height: min(72vh, 560px);
+            align-items: flex-end;
+            justify-content: center;
+            padding-top: clamp(1.5rem, 5vw, 2.5rem);
+            padding-bottom: clamp(1.25rem, 4vw, 2rem);
+          }
+        }
         .welcome__homely {
           background: linear-gradient(180deg, rgba(255, 251, 252, 0.98), var(--color-surface));
           border-top: 1px solid rgba(227, 220, 216, 0.9);
