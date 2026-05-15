@@ -10,7 +10,7 @@ export function Signup() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [birthdateISO, setBirthdateISO] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +26,7 @@ export function Signup() {
       password,
       displayName,
       phone,
-      address,
+      address: zipCode.trim(),
       birthdateISO,
     });
     if (!res.ok) setError(res.message ?? "Could not create account.");
@@ -41,7 +41,7 @@ export function Signup() {
         </Link>
         <h1>Join the Circle</h1>
         <p className="lede">
-          Membership is free. Tell us how to reach you — a site administrator will review new applications before you
+          Membership is free. Tell us how to reach you — a site administrator will review your submission before you
           can use the full community. After approval, sign in to finish your profile.
         </p>
         <p className="auth-legal">
@@ -103,18 +103,20 @@ export function Signup() {
             />
           </div>
           <div className="field">
-            <label className="label" htmlFor="address">
-              Address
+            <label className="label" htmlFor="zipCode">
+              Zip code
             </label>
-            <textarea
-              id="address"
-              className="textarea"
-              rows={3}
+            <input
+              id="zipCode"
+              className="input"
+              type="text"
+              inputMode="numeric"
+              autoComplete="postal-code"
               required
-              autoComplete="street-address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Street, city, state, ZIP — as you would share for the member directory"
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+              placeholder="e.g. 43215"
+              maxLength={10}
             />
           </div>
           <div className="field">
@@ -151,7 +153,7 @@ export function Signup() {
           </div>
           {error && <p role="alert" className="auth-error">{error}</p>}
           <button type="submit" className="btn btn-primary auth-submit">
-            Submit application
+            Submit
           </button>
         </form>
         <p className="auth-switch">
@@ -175,6 +177,9 @@ export function Signup() {
           width: 100%;
           max-width: 440px;
           padding: var(--space-lg);
+        }
+        .auth-card h1 {
+          text-align: center;
         }
         .auth-brand {
           display: flex;

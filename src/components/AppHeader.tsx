@@ -197,7 +197,7 @@ export function AppHeader() {
           background: var(--color-surface);
           box-shadow: 0 18px 40px rgba(24, 18, 32, 0.12);
           padding: 0.45rem;
-          z-index: 60;
+          z-index: 600;
         }
         .app-header__menu--open {
           display: block;

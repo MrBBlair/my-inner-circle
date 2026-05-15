@@ -33,9 +33,32 @@
       color: var(--ink);
       padding: 2rem;
       line-height: 1.6;
+      position: relative;
+      isolation: isolate;
     }
 
-    .deck { display: flex; flex-direction: column; gap: 2rem; max-width: 960px; margin: 0 auto; }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: url('/InnerCircle_Old_Logo.png'), url('/InnerCircle_Old_Logo.png');
+      background-repeat: no-repeat, no-repeat;
+      background-size: min(300px, 82vw), min(185px, 48vw);
+      background-position: calc(100% + min(2.25rem, 8vw)) 2%, -20% min(78%, 420px);
+      opacity: 0.052;
+    }
+
+    @media (min-width: 768px) {
+      body::after {
+        background-size: min(400px, 36vw), min(260px, 26vw);
+        background-position: calc(100% + 0.75rem) 6%, -4% 94%;
+        opacity: 0.062;
+      }
+    }
+
+    .deck { display: flex; flex-direction: column; gap: 2rem; max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
 
     .slide {
       background: var(--surface);

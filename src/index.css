@@ -78,6 +78,128 @@ body {
   min-height: 100dvh;
 }
 
+/* Shell stacking: floating brand layer (see .floating-brand-layer) sits at z-index 0 */
+.marketing-shell,
+.app-shell,
+.auth-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.floating-brand-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.floating-brand-layer__slot {
+  position: absolute;
+  transform-origin: center center;
+  line-height: 0;
+}
+
+.floating-brand-layer__mark-scale {
+  transform-origin: center center;
+  line-height: 0;
+}
+
+.floating-brand-layer__mark {
+  display: block;
+  width: min(300px, 82vw);
+  height: auto;
+  opacity: 0.056;
+  animation: mic-float-drift var(--mic-float-dur, 36s) linear infinite;
+  animation-delay: var(--mic-float-delay, 0s);
+}
+
+@media (min-width: 768px) {
+  .floating-brand-layer__mark {
+    width: min(380px, 34vw);
+    opacity: 0.064;
+  }
+}
+
+@keyframes mic-float-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(14px, -20px, 0) rotate(0.9deg);
+  }
+  50% {
+    transform: translate3d(-12px, 14px, 0) rotate(-0.7deg);
+  }
+  75% {
+    transform: translate3d(16px, 10px, 0) rotate(0.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-brand-layer__mark {
+    animation: none;
+  }
+}
+
+/* App shell: one watermark in the corridor between the feed (max 43rem) and the updates column / viewport edge. */
+.floating-brand-layer--app .floating-brand-layer__slot--app-gutter {
+  right: auto;
+  /* To the right of a centered ~43rem feed on single-column layouts */
+  left: calc(50vw + min(22rem, 34vw));
+  top: clamp(32vh, 44vh, 60vh);
+  transform: translateX(-50%);
+}
+
+.floating-brand-layer--app .floating-brand-layer__slot--app-gutter .floating-brand-layer__mark {
+  width: min(240px, 40vw);
+  opacity: 0.06;
+}
+
+@media (min-width: 900px) {
+  .floating-brand-layer--app .floating-brand-layer__slot--app-gutter {
+    --mic-shell-w: min(1120px, calc(100vw - 2 * var(--space-md)));
+    /* First grid column width minus gap, then corridor between feed block and sidebar (see .app-main grid). */
+    --mic-col1: calc(var(--mic-shell-w) - 300px - var(--space-xl));
+    --mic-feed: min(43rem, var(--mic-col1));
+    left: calc(
+      (100vw - var(--mic-shell-w)) / 2 + (3 * var(--mic-col1)) / 4 + var(--mic-feed) / 4 + var(--space-xl) / 2
+    );
+    top: clamp(34vh, 46vh, 62vh);
+    transform: translateX(-50%);
+  }
+
+  .floating-brand-layer--app .floating-brand-layer__slot--app-gutter .floating-brand-layer__mark {
+    /* Room in the feed–sidebar corridor; cap so it stays mostly on the patterned margin */
+    width: min(280px, max(140px, calc((var(--mic-col1) - var(--mic-feed)) / 2 + var(--space-xl) + 4rem)));
+    opacity: 0.064;
+  }
+}
+
+/* Header above main so dropdown / hamburger menu is not covered by hero (sibling stacking). */
+.marketing-shell > .site-header {
+  position: relative;
+  z-index: 200;
+}
+
+.marketing-shell > .marketing-shell__content,
+.marketing-shell > .site-footer,
+.app-shell > *:not(.floating-brand-layer):not(.app-header):not(.bottom-nav),
+.auth-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Keep fixed chrome above .app-main tiles (both were forced to z-index: 1, so main painted over the menu). */
+.app-shell > .app-header {
+  z-index: 300;
+}
+
+.app-shell > .bottom-nav {
+  z-index: 280;
+}
+
 .marketing-shell {
   display: flex;
   flex-direction: column;
@@ -523,5 +645,9 @@ img {
     border: none !important;
     padding: 0 !important;
     max-width: 100% !important;
+  }
+
+  .floating-brand-layer {
+    display: none !important;
   }
 }

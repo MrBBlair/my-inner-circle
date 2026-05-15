@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppHeader } from "./components/AppHeader";
+import { FloatingBrandLayer } from "./components/FloatingBrandLayer";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { BottomNav } from "./components/BottomNav";
 import { LegalStrip } from "./components/LegalStrip";
@@ -42,6 +43,7 @@ import { WellnessPage } from "./pages/WellnessPage";
 function AppLayout() {
   return (
     <div className="app-shell">
+      <FloatingBrandLayer variant="app" />
       <AppHeader />
       <main className="app-main">
         <div>

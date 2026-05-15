@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { BrandLogo } from "./BrandLogo";
+import { getMonetaryGivingUrl } from "../lib/constants";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   "site-header__link" + (isActive ? " site-header__link--active" : "");
@@ -15,9 +16,22 @@ export function SiteHeader() {
   const inApp = Boolean(user?.onboardingComplete);
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const el = headerRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [menuOpen]);
 
   return (
-    <header className="site-header">
+    <header ref={headerRef} className="site-header">
       <div className="site-header__inner">
         <Link
           to={inApp ? "/app" : "/"}
@@ -32,6 +46,15 @@ export function SiteHeader() {
               My Circle
             </Link>
           ) : null}
+          <a
+            href={getMonetaryGivingUrl()}
+            className="site-header__donate"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Donate — opens giving page in a new tab"
+          >
+            Donate
+          </a>
           <button
             type="button"
             className="site-header__menu-toggle"
@@ -63,13 +86,14 @@ export function SiteHeader() {
         .site-header {
           position: sticky;
           top: 0;
-          z-index: 50;
+          z-index: 200;
           background: var(--header-bar-bg);
           backdrop-filter: blur(var(--header-bar-blur));
           -webkit-backdrop-filter: blur(var(--header-bar-blur));
           border-bottom: 1px solid var(--color-border);
         }
         .site-header__inner {
+          position: relative;
           max-width: 1120px;
           margin: 0 auto;
           padding: var(--header-inner-pad-y) var(--space-md) var(--header-inner-pad-y-bottom);
@@ -99,6 +123,24 @@ export function SiteHeader() {
         .site-header__mycircle:hover {
           background: var(--color-teal-soft);
           border-color: var(--color-teal-soft);
+        }
+        .site-header__donate {
+          font-family: var(--font-body);
+          font-weight: 600;
+          font-size: 0.88rem;
+          padding: 0.48rem 0.95rem;
+          border-radius: 999px;
+          text-decoration: none;
+          white-space: nowrap;
+          color: #fff;
+          background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+          box-shadow: 0 2px 12px rgba(92, 21, 56, 0.28);
+          border: none;
+          transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        .site-header__donate:hover {
+          color: #fff;
+          box-shadow: 0 4px 18px rgba(92, 21, 56, 0.38);
         }
         .site-header__brand {
           text-decoration: none;
@@ -138,7 +180,7 @@ export function SiteHeader() {
           background: var(--color-surface);
           box-shadow: 0 18px 40px rgba(24, 18, 32, 0.12);
           padding: 0.45rem;
-          z-index: 60;
+          z-index: 600;
         }
         .site-header__menu--open {
           display: grid;
