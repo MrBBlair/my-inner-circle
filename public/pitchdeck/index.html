@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Inner Circle — Pitch Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple: #6b3fa0;
+      --purple-light: #ebe0f7;
+      --teal:   #1a6b6b;
+      --teal-light: #d4eeee;
+      --rose:   #c0516a;
+      --rose-light: #fce8ef;
+      --ink:    #1c1420;
+      --muted:  #5a5060;
+      --bg:     #fffbfc;
+      --surface: #fff;
+      --border:  rgba(180,160,170,0.25);
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: #e8e0ec;
+      color: var(--ink);
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .deck { display: flex; flex-direction: column; gap: 2rem; max-width: 960px; margin: 0 auto; }
+
+    .slide {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 2.75rem 3.25rem;
+      box-shadow: 0 6px 40px rgba(40,20,60,0.10);
+      page-break-inside: avoid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-number {
+      position: absolute;
+      top: 1.25rem; right: 1.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.45;
+    }
+
+    /* Title slide */
+    .slide--title {
+      background: linear-gradient(145deg, #1a0a14 0%, #2d1240 55%, #0d3333 100%);
+      color: #fff;
+      text-align: center;
+      padding: 4rem 3rem 3.5rem;
+    }
+    .slide--title .eyebrow {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-bottom: 1rem;
+    }
+    .slide--title h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      color: #fff; line-height: 1.15; margin-bottom: 1.1rem;
+    }
+    .slide--title h1 em { color: #ea8f80; font-style: normal; }
+    .slide--title .tagline {
+      font-size: 1.05rem; color: rgba(255,255,255,0.72);
+      max-width: 34rem; margin: 0 auto 1.75rem; line-height: 1.6;
+    }
+    .title-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1.25rem; }
+    .title-pill {
+      border: 1px solid rgba(255,255,255,0.28); border-radius: 99px;
+      padding: 0.3rem 0.85rem; font-size: 0.82rem; color: rgba(255,255,255,0.72);
+    }
+
+    /* Labels & headings */
+    .label {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--purple); margin-bottom: 0.5rem;
+    }
+    .slide h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--teal); line-height: 1.2; margin-bottom: 0.85rem;
+    }
+    .slide p { color: var(--muted); font-size: 0.98rem; line-height: 1.65; }
+
+    /* Accent bar */
+    .accent-bar {
+      height: 5px; border-radius: 99px;
+      background: linear-gradient(90deg, var(--purple), var(--rose), var(--teal));
+      margin-bottom: 1.75rem;
+    }
+
+    /* Layout helpers */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Pill lists */
+    .pill-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.85rem; }
+    .pill-list li {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      background: var(--purple-light); border-radius: 10px;
+      padding: 0.65rem 0.9rem; font-size: 0.92rem; color: var(--ink);
+    }
+    .pill-list li .icon { font-size: 1rem; line-height: 1.4; flex-shrink: 0; }
+    .pill-list.teal li { background: var(--teal-light); }
+    .pill-list.rose  li { background: var(--rose-light); }
+
+    /* Stat blocks */
+    .stats { display: grid; gap: 1rem; margin-top: 1.25rem; }
+    .stats-3 { grid-template-columns: repeat(3, 1fr); }
+    .stats-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 600px) { .stats-3, .stats-2 { grid-template-columns: 1fr 1fr; } }
+    .stat {
+      background: var(--rose-light); border-radius: 14px;
+      padding: 1.1rem 0.85rem; text-align: center;
+    }
+    .stat .big { font-family: var(--font-display); font-size: 1.85rem; color: var(--rose); line-height: 1; margin-bottom: 0.3rem; }
+    .stat .caption { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+
+    /* Feature cards */
+    .feature-grid { display: grid; gap: 0.9rem; margin-top: 1.25rem; }
+    .feat-3 { grid-template-columns: repeat(3, 1fr); }
+    .feat-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 600px) { .feat-3, .feat-2 { grid-template-columns: 1fr 1fr; } }
+    .feature-card {
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .feature-card .fc-icon  { font-size: 1.4rem; }
+    .feature-card .fc-title { font-weight: 700; font-size: 0.9rem; color: var(--teal); }
+    .feature-card .fc-body  { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+
+    /* Impact blocks */
+    .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-top: 1.1rem; }
+    @media (max-width: 540px) { .impact-grid { grid-template-columns: 1fr; } }
+    .impact-block {
+      background: linear-gradient(135deg, var(--rose-light), var(--purple-light));
+      border-radius: 14px; padding: 1.1rem;
+    }
+    .impact-block .ib-title { font-weight: 700; color: var(--ink); font-size: 0.92rem; margin-bottom: 0.2rem; }
+    .impact-block .ib-body  { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+
+    /* Grant slide */
+    .grant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.1rem; }
+    @media (max-width: 580px) { .grant-grid { grid-template-columns: 1fr; } }
+    .grant-card {
+      background: linear-gradient(135deg, var(--teal-light), var(--purple-light));
+      border-radius: 14px; padding: 1.1rem 1rem;
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .grant-card .gc-icon  { font-size: 1.5rem; }
+    .grant-card .gc-title { font-weight: 700; color: var(--teal); font-size: 0.93rem; }
+    .grant-card .gc-body  { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+    /* Founder / Who Am I slide */
+    .slide--founder {
+      background: linear-gradient(140deg, #fdf6ff 0%, #fce8ef 100%);
+    }
+    .founder-layout { display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: start; margin-top: 0.5rem; }
+    @media (max-width: 600px) { .founder-layout { grid-template-columns: 1fr; } }
+    .founder-avatar {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: linear-gradient(145deg, var(--purple), var(--rose));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; flex-shrink: 0;
+      box-shadow: 0 6px 24px rgba(107,63,160,0.25);
+    }
+    .founder-name {
+      font-family: var(--font-display); font-size: 1.65rem;
+      color: var(--teal); margin-bottom: 0.25rem;
+    }
+    .founder-title { font-size: 0.88rem; color: var(--purple); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.85rem; }
+    .founder-bio { font-size: 0.97rem; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; }
+    .founder-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .founder-chip {
+      background: rgba(107,63,160,0.1); border: 1px solid rgba(107,63,160,0.2);
+      border-radius: 99px; padding: 0.3rem 0.85rem;
+      font-size: 0.82rem; color: var(--purple); font-weight: 600;
+    }
+
+    /* Mission quote */
+    .mission-quote {
+      border-left: 4px solid var(--rose);
+      padding: 1rem 1.25rem;
+      background: var(--rose-light);
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: var(--ink);
+      font-size: 1rem;
+      line-height: 1.65;
+      margin-top: 1rem;
+    }
+
+    /* CTA slide */
+    .slide--cta {
+      background: linear-gradient(145deg, #1a0a14, #2d1240, #0d3333);
+      color: #fff; text-align: center; padding: 4rem 3rem;
+    }
+    .slide--cta h2 { color: #fff; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 1rem; }
+    .slide--cta p  { color: rgba(255,255,255,0.72); font-size: 1rem; max-width: 36rem; margin: 0 auto 1.75rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; border-radius: 99px; padding: 0.8rem 1.9rem; font-weight: 700; font-size: 0.93rem; cursor: default; }
+    .btn-primary { background: #ea8f80; color: #1a0a14; }
+    .btn-outline  { background: transparent; border: 1.5px solid rgba(255,255,255,0.45); color: rgba(255,255,255,0.85); }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .deck { gap: 0; }
+      .slide { border-radius: 0; box-shadow: none; page-break-after: always; }
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 01 ▸ Title -->
+  <div class="slide slide--title">
+    <div class="eyebrow">Pitch Deck · 2026</div>
+    <h1>My Inner Circle — <em>Where Women Belong</em></h1>
+    <p class="tagline">
+      A multicultural women's movement rooted in friendship, connection,
+      and purpose-driven experiences for every generation.
+    </p>
+    <div class="title-pills">
+      <span class="title-pill">Friendship</span>
+      <span class="title-pill">Support</span>
+      <span class="title-pill">Empowerment</span>
+      <span class="title-pill">Mentorship</span>
+      <span class="title-pill">Wellness</span>
+      <span class="title-pill">Legacy</span>
+    </div>
+    <p style="color:rgba(255,255,255,0.35); font-size:0.78rem; margin-top:2rem;">myinnercircleinc.org</p>
+  </div>
+
+  <!-- 02 ▸ Who I Am -->
+  <div class="slide slide--founder">
+    <span class="slide-number">02</span>
+    <div class="accent-bar"></div>
+    <span class="label">Founder</span>
+    <div class="founder-layout">
+      <div class="founder-avatar">👑</div>
+      <div>
+        <div class="founder-name">Keren Alexis</div>
+        <div class="founder-title">Founder &amp; Visionary · My Inner Circle Inc.</div>
+        <p class="founder-bio">
+          Keren brings decades of wisdom, resilience, and lived experience to every space she enters. As a licensed cosmetologist and entrepreneur, she has dedicated her life to creating meaningful connections — behind the chair, throughout her community, and now through a growing movement that empowers and inspires women everywhere.
+        </p>
+        <div style="margin-top:0.75rem;">
+          <div style="font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--purple); margin-bottom:0.6rem;">My Why</div>
+          <div style="display:flex; flex-direction:column; gap:0.6rem;">
+            <div style="display:flex; gap:0.75rem; align-items:flex-start; background:rgba(192,81,106,0.08); border-left:3px solid var(--rose); border-radius:0 10px 10px 0; padding:0.7rem 0.9rem;">
+              <span style="font-size:1.1rem; flex-shrink:0;">🕊️</span>
+              <p style="margin:0; font-size:0.9rem; color:var(--ink); line-height:1.55;">
+                <strong>Loss that revealed love.</strong> When Keren lost her 4-month-old child, her friends showed up — completely, without hesitation. That moment of grace changed everything she understood about what friendship truly means.
+              </p>
+            </div>
+            <div style="display:flex; gap:0.75rem; align-items:flex-start; background:rgba(107,63,160,0.07); border-left:3px solid var(--purple); border-radius:0 10px 10px 0; padding:0.7rem 0.9rem;">
+              <span style="font-size:1.1rem; flex-shrink:0;">✨</span>
+              <p style="margin:0; font-size:0.9rem; color:var(--ink); line-height:1.55;">
+                <strong>A realization at a friendship party.</strong> Surrounded by women she loved, Keren had a defining moment of clarity — that intentional gatherings have the power to transform lives and spark lasting bonds.
+              </p>
+            </div>
+            <div style="display:flex; gap:0.75rem; align-items:flex-start; background:rgba(26,107,107,0.07); border-left:3px solid var(--teal); border-radius:0 10px 10px 0; padding:0.7rem 0.9rem;">
+              <span style="font-size:1.1rem; flex-shrink:0;">💛</span>
+              <p style="margin:0; font-size:0.9rem; color:var(--ink); line-height:1.55;">
+                <strong>The irreplaceable value of lifelong friendship.</strong> Through decades of genuine relationships, Keren came to know that true friendship is one of life's greatest gifts — and that every woman deserves it.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="founder-chips" style="margin-top:1rem;">
+          <span class="founder-chip">Cosmetologist</span>
+          <span class="founder-chip">Entrepreneur</span>
+          <span class="founder-chip">Community Builder</span>
+          <span class="founder-chip">Mentor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 ▸ Mission -->
+  <div class="slide">
+    <span class="slide-number">03</span>
+    <div class="accent-bar"></div>
+    <span class="label">Mission Statement</span>
+    <h2>A movement, not just a membership.</h2>
+    <div class="mission-quote">
+      "My Inner Circle Inc. is more than a community — it is a movement rooted in friendship, designed to empower
+      resilient women through connection, education, and transformative social experiences that ignite growth,
+      confidence, and purpose."
+    </div>
+    <div class="two-col" style="margin-top:1.5rem;">
+      <ul class="pill-list teal">
+        <li><span class="icon">🔑</span> Support &amp; Trust</li>
+        <li><span class="icon">📚</span> Education &amp; Coaching</li>
+        <li><span class="icon">❤️‍🩹</span> Healing &amp; Wellness</li>
+      </ul>
+      <ul class="pill-list rose">
+        <li><span class="icon">🤝</span> Friendship &amp; Connection</li>
+        <li><span class="icon">🌱</span> Growth &amp; Empowerment</li>
+        <li><span class="icon">🏛️</span> Legacy &amp; Culture</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 04 ▸ The Problem (shortened) -->
+  <div class="slide">
+    <span class="slide-number">04</span>
+    <div class="accent-bar"></div>
+    <span class="label">The Problem</span>
+    <h2>Women are more connected — and more isolated — than ever.</h2>
+    <p style="margin-bottom:1.25rem;">Social media gives the illusion of community without the substance. Women across every age and background struggle to find safe spaces, genuine friendships, trusted mentors, and holistic support that honors their whole story.</p>
+    <div class="stats stats-2">
+      <div class="stat">
+        <div class="big">58%</div>
+        <div class="caption">of women report feeling lonely at least sometimes</div>
+      </div>
+      <div class="stat">
+        <div class="big">1 in 3</div>
+        <div class="caption">say they have no one to turn to in a crisis</div>
+      </div>
+    </div>
+    <p style="margin-top:1.1rem;">No dominant multicultural women's community platform exists at scale — and mainstream apps were never built with women's wellbeing as the primary outcome.</p>
+  </div>
+
+  <!-- 05 ▸ What We Offer (shortened) -->
+  <div class="slide">
+    <span class="slide-number">05</span>
+    <div class="accent-bar"></div>
+    <span class="label">What We Offer</span>
+    <h2>A purpose-built platform for real community.</h2>
+    <p style="margin-bottom:1rem;">Every culture, every generation, every story — invited into meaningful rooms.</p>
+    <div class="feature-grid feat-3">
+      <div class="feature-card">
+        <span class="fc-icon">🏡</span>
+        <span class="fc-title">Neighborhood Forums</span>
+        <span class="fc-body">Member-led local groups with private threads, events &amp; virtual meetups.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🗓️</span>
+        <span class="fc-title">Events &amp; Gatherings</span>
+        <span class="fc-body">Free, ticketed, RSVP, and virtual — synced to your calendar.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🌿</span>
+        <span class="fc-title">Wellness Hub</span>
+        <span class="fc-body">Monthly challenges, affirmations, and healing-focused content.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🙏</span>
+        <span class="fc-title">Support &amp; Prayer</span>
+        <span class="fc-body">Prayer requests, listener matching, and crisis resource directory.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">📖</span>
+        <span class="fc-title">Blog &amp; Stories</span>
+        <span class="fc-body">Community voices and shared experiences — published monthly.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🎁</span>
+        <span class="fc-title">Give &amp; Receive</span>
+        <span class="fc-body">Clothes, skills, time, and monetary giving — powered by Zeffy.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 ▸ Who We Serve (shortened) -->
+  <div class="slide">
+    <span class="slide-number">06</span>
+    <div class="accent-bar"></div>
+    <span class="label">Who We Serve</span>
+    <h2>Every woman. Every chapter. Every culture.</h2>
+    <div class="stats stats-3" style="margin-bottom:1.25rem;">
+      <div class="stat">
+        <div class="big">All ages</div>
+        <div class="caption">Teens (with guardian) through elders &amp; grandmothers</div>
+      </div>
+      <div class="stat">
+        <div class="big">All cultures</div>
+        <div class="caption">Black, White, Latina, Asian, Indigenous &amp; every heritage</div>
+      </div>
+      <div class="stat">
+        <div class="big">All roles</div>
+        <div class="caption">Moms, founders, caregivers, creatives, seekers &amp; mentors</div>
+      </div>
+    </div>
+    <p>Women seeking support, friendship, or connection — navigating grief, building a business, raising children, caring for elders, healing from trauma, or simply looking for a friend who gets it.</p>
+  </div>
+
+  <!-- 07 ▸ Community Impact (shortened) -->
+  <div class="slide">
+    <span class="slide-number">07</span>
+    <div class="accent-bar"></div>
+    <span class="label">Community Impact</span>
+    <h2>Values made visible in real life.</h2>
+    <div class="impact-grid">
+      <div class="impact-block">
+        <div class="ib-title">Wellness &amp; Worth</div>
+        <div class="ib-body">Healing days and restorative gatherings centered on mental, emotional, and spiritual health.</div>
+      </div>
+      <div class="impact-block">
+        <div class="ib-title">Back-to-School Confidence</div>
+        <div class="ib-body">Supply drives and mentoring touchpoints for young girls and their families.</div>
+      </div>
+      <div class="impact-block">
+        <div class="ib-title">Mentorship Sisterhood</div>
+        <div class="ib-body">Consistent peer and mentor circles spotlighted across directories and forums.</div>
+      </div>
+      <div class="impact-block">
+        <div class="ib-title">Life Coaching &amp; Growth</div>
+        <div class="ib-body">Workshops and peer wisdom sessions spanning every chapter of a woman's life.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 ▸ What a Grant Can Do -->
+  <div class="slide">
+    <span class="slide-number">08</span>
+    <div class="accent-bar"></div>
+    <span class="label">Grant Impact</span>
+    <h2>What a grant can unlock for this movement.</h2>
+    <p style="margin-bottom:1.1rem;">
+      Funding transforms My Inner Circle from a growing community into a full-scale initiative — with the infrastructure,
+      programming, and reach to create lasting change across generations and demographics.
+    </p>
+    <div class="grant-grid">
+      <div class="grant-card">
+        <span class="gc-icon">🚀</span>
+        <span class="gc-title">Push the Initiative Forward</span>
+        <span class="gc-body">Expand outreach, grow membership, and scale the platform to serve more women in more communities across the country.</span>
+      </div>
+      <div class="grant-card">
+        <span class="gc-icon">🎓</span>
+        <span class="gc-title">Develop Curriculum</span>
+        <span class="gc-body">Create structured learning programs for school-age girls and adults — covering confidence, leadership, wellness, financial literacy, and life skills.</span>
+      </div>
+      <div class="grant-card">
+        <span class="gc-icon">🌸</span>
+        <span class="gc-title">Workshops &amp; Gatherings</span>
+        <span class="gc-body">Fund purpose-driven workshops, healing retreats, and in-person sisterhood events that women can attend regardless of financial means.</span>
+      </div>
+      <div class="grant-card">
+        <span class="gc-icon">🌉</span>
+        <span class="gc-title">Close the Gaps</span>
+        <span class="gc-body">Bridge the divides between generations, cultures, and demographics — building programs where teens learn from elders, and immigrants find belonging alongside longtime locals.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 ▸ Get Involved -->
+  <div class="slide">
+    <span class="slide-number">09</span>
+    <div class="accent-bar"></div>
+    <span class="label">How to Get Involved</span>
+    <h2>There are many ways to be part of the circle.</h2>
+    <div class="feature-grid feat-2" style="margin-top:1.1rem;">
+      <div class="feature-card">
+        <span class="fc-icon">🙋‍♀️</span>
+        <span class="fc-title">Become a Member</span>
+        <span class="fc-body">Free membership — full access to community, events, forums, wellness resources, and support.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">💸</span>
+        <span class="fc-title">Donate</span>
+        <span class="fc-body">Support programs, back-to-school drives, and community events via our Zeffy giving portal.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🤝</span>
+        <span class="fc-title">Partner or Sponsor</span>
+        <span class="fc-body">Align your brand or organization with a mission of empowerment, wellness, and multicultural sisterhood.</span>
+      </div>
+      <div class="feature-card">
+        <span class="fc-icon">🧡</span>
+        <span class="fc-title">Volunteer or Mentor</span>
+        <span class="fc-body">Host a workshop, lead a forum, mentor a younger member — contribute your time and story.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 ▸ CTA -->
+  <div class="slide slide--cta">
+    <h2>Your circle is waiting.</h2>
+    <p>
+      Every woman deserves a space where she is seen, heard, and celebrated.
+      My Inner Circle is that space — built with love, grounded in friendship,
+      and open to every woman who needs it.
+    </p>
+    <div class="cta-buttons">
+      <span class="btn btn-primary">Join the Community</span>
+      <span class="btn btn-outline">myinnercircleinc.org</span>
+    </div>
+    <p style="font-size:0.78rem; color:rgba(255,255,255,0.32); margin-top:2.5rem;">
+      My Inner Circle Inc. &nbsp;·&nbsp; A nonprofit women's community organization
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

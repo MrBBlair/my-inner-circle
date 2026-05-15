@@ -21,6 +21,7 @@ import { Login } from "./pages/Login";
 import { ModerationPage } from "./pages/ModerationPage";
 import { NeighborhoodGroupForumPage } from "./pages/NeighborhoodGroupForumPage";
 import { Onboarding } from "./pages/Onboarding";
+import { PitchDeckRedirect } from "./pages/PitchDeckRedirect";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import { ProfilePage } from "./pages/ProfilePage";
 import { PublicContact } from "./pages/PublicContact";
@@ -59,6 +60,8 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
+      <Route path="/pitchdeck" element={<PitchDeckRedirect />} />
+      <Route path="/pitchdeck/" element={<PitchDeckRedirect />} />
       <Route element={<MarketingLayout />}>
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
