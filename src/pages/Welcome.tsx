@@ -281,19 +281,26 @@ export function Welcome() {
           width: 100%;
           max-width: none;
           margin: 0 auto;
+          /* Mobile: stage must be tall enough for bottom-pinned copy; otherwise the cluster
+             grows upward past the photo and clips under the sticky header (overflow:hidden). */
+          min-height: min(82vh, 52rem);
         }
         .welcome__hero-photo-strip {
           display: block;
           width: 100%;
           background: #fff2f5;
           line-height: 0;
+          position: absolute;
+          inset: 0;
+          z-index: 0;
         }
         .welcome__hero-photo-strip__img {
           width: 100%;
-          height: auto;
+          height: 100%;
+          min-height: 100%;
           display: block;
-          object-fit: contain;
-          object-position: center top;
+          object-fit: cover;
+          object-position: center 28%;
           filter: saturate(1.08) brightness(1.06);
         }
         .welcome__hero-cluster {
@@ -306,8 +313,14 @@ export function Welcome() {
           left: 0;
           right: 0;
           bottom: 0;
+          z-index: 1;
           padding: var(--space-md);
           padding-bottom: var(--space-md);
+          /* Keep long headlines/subcopy from riding up past the photo when type scales. */
+          padding-top: max(var(--space-md), env(safe-area-inset-top, 0px));
+          justify-content: flex-end;
+          max-height: 100%;
+          box-sizing: border-box;
         }
         .welcome__hero-inner {
           background: none;
@@ -413,17 +426,25 @@ export function Welcome() {
             flex: 1;
             justify-content: flex-end;
             max-width: 1120px;
+            min-height: 0;
           }
           .welcome__hero-photo-strip {
             display: none;
+            position: static;
+            inset: auto;
+            z-index: auto;
           }
           .welcome__hero-cluster {
             position: relative;
             left: auto;
             right: auto;
             bottom: auto;
+            z-index: auto;
             padding: 0;
             padding-bottom: clamp(0.75rem, 2.5vw, 1.5rem);
+            padding-top: 0;
+            max-height: none;
+            justify-content: flex-start;
           }
           .welcome__hero-inner {
             max-width: 42rem;
